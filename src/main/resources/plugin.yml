@@ -1,0 +1,11 @@
+name: BeaconLabsCore
+version: '${project.version}'
+main: org.bcnlab.beaconlabscore.BeaconLabsCore
+author: ItsBeacon
+api-version: '1.21'
+commands:
+  fly:
+    description: Toggles fly mode.
+    usage: /fly
+    permission: beaconlabscore.fly
+    permission-message: "&cYou do not have permission to use this command."
