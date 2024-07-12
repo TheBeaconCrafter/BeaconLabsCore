@@ -18,8 +18,10 @@ public final class BeaconLabsCore extends JavaPlugin implements Listener {
     //CONFIG
     private boolean joinMessagesEnabled;
     private boolean leaveMessagesEnabled;
+    private boolean deathMessagesEnabled;
     private String customJoinMessage;
     private String customLeaveMessage;
+    private String customDeathMessage;
 
     @Override
     public void onEnable() {
@@ -37,6 +39,8 @@ public final class BeaconLabsCore extends JavaPlugin implements Listener {
 
         // Register other commands and listeners
         getServer().getPluginManager().registerEvents(this, this);
+        getServer().getPluginManager().registerEvents(new JoinLeaveMessages(this), this);
+        getServer().getPluginManager().registerEvents(new DeathMessages(this), this);
         getCommand("fly").setExecutor(new FlyCommand(pluginPrefix));
         getCommand("core").setExecutor(new CoreCommand(this));
         getCommand("heal").setExecutor(new HealCommand(this));
@@ -72,12 +76,15 @@ public final class BeaconLabsCore extends JavaPlugin implements Listener {
         // Load join and leave messages enabled status
         joinMessagesEnabled = config.getBoolean("join-messages.enabled", true);
         leaveMessagesEnabled = config.getBoolean("leave-messages.enabled", true);
-        customJoinMessage = config.getString("join-messages.custom", "&6[+] ERROR");
-        customLeaveMessage = config.getString("leave-messages.custom", "&6[-] ERROR");
+        deathMessagesEnabled = config.getBoolean("death-messages.enabled", true);
+        customJoinMessage = config.getString("join-messages.custom", "&6[+] PLEASE RESTART FOR THIS TO WORK");
+        customLeaveMessage = config.getString("leave-messages.custom", "&6[-] PLEASE RESTART FOR THIS TO WORK");
+        customDeathMessage = config.getString("death-messages.custom", "&4&lERROR");
 
         // Translate color codes in custom messages
         customJoinMessage = ChatColor.translateAlternateColorCodes('&', customJoinMessage);
         customLeaveMessage = ChatColor.translateAlternateColorCodes('&', customLeaveMessage);
+        customDeathMessage = ChatColor.translateAlternateColorCodes('&', customDeathMessage);
     }
 
     // Method to create the default configuration if it doesn't exist
@@ -89,6 +96,8 @@ public final class BeaconLabsCore extends JavaPlugin implements Listener {
         config.addDefault("join-messages.custom", "&7[&a+&7] &9{player}");
         config.addDefault("leave-messages.enabled", true);
         config.addDefault("leave-messages.custom", "&7[&a-&7] &9{player}");
+        config.addDefault("death-messages.enabled", true);
+        config.addDefault("death-messages.custom", "&c{player} was killed by {other}");
         saveConfig();
     }
 
@@ -108,11 +117,19 @@ public final class BeaconLabsCore extends JavaPlugin implements Listener {
         return leaveMessagesEnabled;
     }
 
+    public boolean areDeathMessagesEnabled() {
+        return deathMessagesEnabled;
+    }
+
     public String getCustomJoinMessage() {
         return customJoinMessage;
     }
 
     public String getCustomLeaveMessage() {
         return customLeaveMessage;
+    }
+
+    public String getCustomDeathMessage() {
+        return customDeathMessage;
     }
 }

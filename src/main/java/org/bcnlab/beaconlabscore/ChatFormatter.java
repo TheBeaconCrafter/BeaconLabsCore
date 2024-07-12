@@ -2,16 +2,10 @@ package org.bcnlab.beaconlabscore;
 
 import net.luckperms.api.LuckPerms;
 import net.luckperms.api.model.user.User;
-import net.luckperms.api.node.NodeType;
-import net.luckperms.api.node.types.PrefixNode;
-import net.luckperms.api.node.types.SuffixNode;
 import net.luckperms.api.query.QueryOptions;
-import net.luckperms.api.query.dataorder.DataQueryOrder;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
-import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
-import org.bukkit.plugin.java.JavaPlugin;
 
 public class ChatFormatter {
 

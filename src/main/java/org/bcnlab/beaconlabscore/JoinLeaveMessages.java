@@ -11,7 +11,6 @@ public class JoinLeaveMessages implements Listener {
 
     public JoinLeaveMessages(BeaconLabsCore plugin) {
         this.plugin = plugin;
-        plugin.getServer().getPluginManager().registerEvents(this, plugin);
     }
 
     @EventHandler
