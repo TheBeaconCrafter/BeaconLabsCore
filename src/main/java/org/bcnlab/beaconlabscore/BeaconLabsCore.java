@@ -49,6 +49,10 @@ public final class BeaconLabsCore extends JavaPlugin implements Listener {
         getCommand("workbench").setExecutor(new WorkbenchCommand(this));
         getCommand("enderchest").setExecutor(new EnderchestCommand(this));
         getCommand("vanish").setExecutor(new VanishCommand(this));
+        getCommand("tp").setExecutor(new TpCommand(this));
+        getCommand("tphere").setExecutor(new TpHereCommand(this));
+        getCommand("spectate").setExecutor(new SpectateCommand(this));
+        getCommand("endspectate").setExecutor(new EndSpectateCommand(this));
 
         // Plugin startup logic
         getLogger().info(pluginPrefix + "BeaconLabsCore was enabled!");

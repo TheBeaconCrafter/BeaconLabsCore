@@ -33,6 +33,22 @@ commands:
     description: Hide yourself from other players
     usage: /vanish [player]
     aliases: [v]
+  tp:
+    description: Teleport to a player or teleport players
+    usage: /tp <player> [to_player]
+    aliases: [teleport]
+  tphere:
+    description: Teleport a player to you
+    usage: /tphere <player>
+    aliases: [tph]
+  spectate:
+    description: Spectates a player while being invisible
+    usage: /spectate <player>
+    aliases: [spec]
+  endspectate:
+    description: Ends spectator mode
+    usage: /endspectate
+    aliases: [espec]
 permissions:
   beaconlabs.core.vanish.self:
     description: Allows a player to vanish themselves.
