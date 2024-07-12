@@ -60,6 +60,38 @@ commands:
     description: Broadcast a message to the entire server (not proxywide!)
     usage: /serverbroadcast <message>
     aliases: [sbc]
+  weather:
+    description: Change the weather
+    usage: /weather <clear|rain|storm>
+    aliases: [w]
+  clear:
+    description: Change the weather to clear
+    usage: /clear
+  rain:
+    description: Change the weather to rain
+    usage: /rain
+  storm:
+    description: Change the weather to storm
+    usage: /storm
+  time:
+    description: Change the time
+    usage: /time <value|day|night|midnight|noon>
+  day:
+    description: Set the time to day
+    usage: /day
+  night:
+    description: Set the time to night
+    usage: /night
+  midnight:
+    description: Set the time to midnight
+    usage: /midnight
+  noon:
+    description: Set the time to noon
+    usage: /noon
+  globalmute:
+    description: Mute the entire chat
+    usage: /globalmute
+    aliases: [gmute]
 permissions:
   beaconlabs.core.vanish.self:
     description: Allows a player to vanish themselves.
@@ -93,4 +125,16 @@ permissions:
     default: not op
   beaconlab.core.broadcast:
     description: Allows the user to broadcast messages serverwide (not proxywide!)
+    default: op
+  beaconlabs.core.weather:
+    description: Allows a user to change the weather
+    default: op
+  beaconlabs.core.time:
+    description: Allows a user to change the time
+    default: op
+  beaconlabs.core.globalmute.set:
+    description: Enable global mute
+    default: op
+  beaconlabs.core.globalmute.ignore:
+    description: Ignore global mute
     default: op

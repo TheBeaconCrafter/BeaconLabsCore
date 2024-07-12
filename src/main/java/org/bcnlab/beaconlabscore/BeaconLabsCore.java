@@ -3,12 +3,15 @@ package org.bcnlab.beaconlabscore;
 import net.luckperms.api.LuckPerms;
 import net.luckperms.api.LuckPermsProvider;
 import org.bcnlab.beaconlabscore.commands.*;
-import org.bcnlab.beaconlabscore.listeners.ChatFormatter;
-import org.bcnlab.beaconlabscore.listeners.DeathMessages;
-import org.bcnlab.beaconlabscore.listeners.JoinLeaveMessages;
-import org.bcnlab.beaconlabscore.listeners.UnknownCommandListener;
+import org.bcnlab.beaconlabscore.commands.time.*;
+import org.bcnlab.beaconlabscore.commands.weather.ClearCommand;
+import org.bcnlab.beaconlabscore.commands.weather.RainCommand;
+import org.bcnlab.beaconlabscore.commands.weather.StormCommand;
+import org.bcnlab.beaconlabscore.commands.weather.WeatherCommand;
+import org.bcnlab.beaconlabscore.listeners.*;
 import org.bukkit.ChatColor;
 import org.bukkit.configuration.file.FileConfiguration;
+import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.AsyncPlayerChatEvent;
@@ -27,6 +30,7 @@ public final class BeaconLabsCore extends JavaPlugin implements Listener {
     private String customJoinMessage;
     private String customLeaveMessage;
     private String customDeathMessage;
+    private String noPermsMessage = "&cYou do not have permission to use this command.";
 
     @Override
     public void onEnable() {
@@ -62,6 +66,16 @@ public final class BeaconLabsCore extends JavaPlugin implements Listener {
         getCommand("chatsudo").setExecutor(new ChatSudoCommand(this, luckPerms));
         getCommand("sudo").setExecutor(new SudoCommand(this));
         getCommand("serverbroadcast").setExecutor(new ServerBroadcastCommand(this));
+        getCommand("weather").setExecutor(new WeatherCommand(this));
+        getCommand("clear").setExecutor(new ClearCommand(this));
+        getCommand("rain").setExecutor(new RainCommand(this));
+        getCommand("storm").setExecutor(new StormCommand(this));
+        getCommand("day").setExecutor(new DayCommand(this));
+        getCommand("midnight").setExecutor(new MidnightCommand(this));
+        getCommand("night").setExecutor(new NightCommand(this));
+        getCommand("noon").setExecutor(new NoonCommand(this));
+        getCommand("time").setExecutor(new TimeCommand(this));
+        getCommand("globalmute").setExecutor(new GlobalMuteCommand(this));
 
         // Plugin startup logic
         getLogger().info(pluginPrefix + "BeaconLabsCore was enabled!");
@@ -70,7 +84,18 @@ public final class BeaconLabsCore extends JavaPlugin implements Listener {
     @EventHandler
     public void onPlayerChat(AsyncPlayerChatEvent event) {
         event.setCancelled(true); // Prevent default chat behavior
-        chatFormatter.onPlayerChat(event.getPlayer(), event.getMessage());
+        final Player p = event.getPlayer();
+        if (GlobalMuteCommand.globalmute) {
+            if (!p.hasPermission("beaconlabs.core.globalmute.ignore")) {
+                p.sendMessage(getPrefix() + "§aChat is §cdeactivated!");
+                event.setCancelled(true);
+            } else {
+                chatFormatter.onPlayerChat(event.getPlayer(), event.getMessage());
+            }
+        }
+        else {
+            chatFormatter.onPlayerChat(event.getPlayer(), event.getMessage());
+        }
     }
 
     @Override
@@ -144,5 +169,9 @@ public final class BeaconLabsCore extends JavaPlugin implements Listener {
 
     public String getCustomDeathMessage() {
         return customDeathMessage;
+    }
+
+    public String getMoPermsMessage() {
+        return noPermsMessage;
     }
 }
