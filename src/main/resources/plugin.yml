@@ -49,6 +49,13 @@ commands:
     description: Ends spectator mode
     usage: /endspectate
     aliases: [espec]
+  chatsudo:
+    description: Sends chat messages as another player
+    usage: /chatsudo <player> <message>
+    aliases: [csudo]
+  sudo:
+    description: Executes commands as another player
+    usage: /sudo <player> <command>
 permissions:
   beaconlabs.core.vanish.self:
     description: Allows a player to vanish themselves.
@@ -68,3 +75,15 @@ permissions:
   beaconlabs.core.gamemode.others:
     description: Allows changing other players' game modes.
     default: op
+  beaconlabs.core.sudo:
+    description: Allows executing commands as other players
+    default: op
+  beaconlabs.core.csudo:
+    description: Allows sending messages as other players
+    default: op
+  beaconlabs.core.tp:
+    description: Allows teleporting players
+    default: op
+  beaconlabs.core.info:
+    description: Returns info about the plugin
+    default: not op

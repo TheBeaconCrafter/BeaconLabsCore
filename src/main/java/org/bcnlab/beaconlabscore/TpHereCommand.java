@@ -26,7 +26,7 @@ public class TpHereCommand implements CommandExecutor {
         Player player = (Player) sender;
 
         // Check permission
-        if (!player.hasPermission("beaconlabscore.tp")) {
+        if (!player.hasPermission("beaconlabs.core.tp")) {
             player.sendMessage(plugin.getPrefix() + ChatColor.RED + "You do not have permission to use this command.");
             return true;
         }

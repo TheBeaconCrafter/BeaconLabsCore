@@ -7,11 +7,11 @@ import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
-public class TpCommand implements CommandExecutor {
+public class SudoCommand implements CommandExecutor {
 
     private final BeaconLabsCore plugin;
 
-    public TpCommand(BeaconLabsCore plugin) {
+    public SudoCommand(BeaconLabsCore plugin) {
         this.plugin = plugin;
     }
 
@@ -26,14 +26,14 @@ public class TpCommand implements CommandExecutor {
         Player player = (Player) sender;
 
         // Check permission
-        if (!player.hasPermission("beaconlabs.core.tp")) {
+        if (!player.hasPermission("beaconlabs.core.sudo")) {
             player.sendMessage(plugin.getPrefix() + ChatColor.RED + "You do not have permission to use this command.");
             return true;
         }
 
         // Validate command usage
-        if (args.length < 1 || args.length > 2) {
-            player.sendMessage(plugin.getPrefix() + ChatColor.RED + "Usage: /tp <target> [destination]");
+        if (args.length < 2) {
+            player.sendMessage(plugin.getPrefix() + ChatColor.RED + "Usage: /sudo <player> <command> [args...]");
             return true;
         }
 
@@ -46,23 +46,20 @@ public class TpCommand implements CommandExecutor {
             return true;
         }
 
-        // If only one argument is provided, teleport sender to target
-        if (args.length == 1) {
-            player.teleport(target.getLocation());
-            player.sendMessage(plugin.getPrefix() + ChatColor.GREEN + "Teleported to " + target.getName() + ".");
-        } else if (args.length == 2) {
-            String destinationName = args[1];
-            Player destination = Bukkit.getPlayer(destinationName);
+        // Build the command to execute
+        StringBuilder commandBuilder = new StringBuilder();
+        for (int i = 1; i < args.length; i++) {
+            commandBuilder.append(args[i]).append(" ");
+        }
+        String commandToExecute = commandBuilder.toString().trim();
 
-            // Check if the destination player is online
-            if (destination == null || !destination.isOnline()) {
-                player.sendMessage(plugin.getPrefix() + ChatColor.RED + "Player '" + destinationName + "' is not online.");
-                return true;
-            }
+        // Execute the command as the target player
+        boolean commandExecuted = Bukkit.dispatchCommand(target, commandToExecute);
 
-            // Teleport target to destination
-            target.teleport(destination.getLocation());
-            player.sendMessage(plugin.getPrefix() + ChatColor.GREEN + "Teleported " + target.getName() + " to " + destination.getName() + ".");
+        if (commandExecuted) {
+            player.sendMessage(plugin.getPrefix() + ChatColor.GREEN + "Successfully executed command as " + target.getName() + ": /" + commandToExecute);
+        } else {
+            player.sendMessage(plugin.getPrefix() + ChatColor.RED + "Failed to execute command as " + target.getName() + ": /" + commandToExecute);
         }
 
         return true;

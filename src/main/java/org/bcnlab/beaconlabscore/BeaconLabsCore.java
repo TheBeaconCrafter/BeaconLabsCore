@@ -53,6 +53,8 @@ public final class BeaconLabsCore extends JavaPlugin implements Listener {
         getCommand("tphere").setExecutor(new TpHereCommand(this));
         getCommand("spectate").setExecutor(new SpectateCommand(this));
         getCommand("endspectate").setExecutor(new EndSpectateCommand(this));
+        getCommand("chatsudo").setExecutor(new ChatSudoCommand(this, luckPerms));
+        getCommand("sudo").setExecutor(new SudoCommand(this));
 
         // Plugin startup logic
         getLogger().info(pluginPrefix + "BeaconLabsCore was enabled!");
