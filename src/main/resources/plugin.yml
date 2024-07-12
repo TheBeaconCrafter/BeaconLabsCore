@@ -56,6 +56,10 @@ commands:
   sudo:
     description: Executes commands as another player
     usage: /sudo <player> <command>
+  serverbroadcast:
+    description: Broadcast a message to the entire server (not proxywide!)
+    usage: /serverbroadcast <message>
+    aliases: [sbc]
 permissions:
   beaconlabs.core.vanish.self:
     description: Allows a player to vanish themselves.
@@ -85,5 +89,8 @@ permissions:
     description: Allows teleporting players
     default: op
   beaconlabs.core.info:
-    description: Returns info about the plugin
+    description: Allows to return info about the plugin
     default: not op
+  beaconlab.core.broadcast:
+    description: Allows the user to broadcast messages serverwide (not proxywide!)
+    default: op
