@@ -1,5 +1,6 @@
 package org.bcnlab.beaconlabscore;
 
+import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
@@ -22,12 +23,39 @@ public class FlyCommand implements CommandExecutor {
         }
 
         Player player = (Player) sender;
-        if (player.getAllowFlight()) {
-            player.setAllowFlight(false);
-            player.sendMessage(pluginPrefix + ChatColor.RED + "Fly mode disabled.");
+
+        if (args.length > 0) {
+            if (!sender.hasPermission("beaconlabs.core.fly.others")) {
+                sender.sendMessage(pluginPrefix + ChatColor.RED + "You do not have permission to fly others.");
+                return true;
+            }
+
+            Player target = Bukkit.getPlayer(args[0]);
+            if (target == null) {
+                sender.sendMessage(pluginPrefix + ChatColor.RED + "Player not found: " + args[0]);
+                return true;
+            }
+
+            if (player.getAllowFlight()) {
+                target.setAllowFlight(false);
+            } else {
+                target.setAllowFlight(true);
+            }
+
+            sender.sendMessage(pluginPrefix + ChatColor.GREEN + "Made " + target.getName() + " fly.");
+            target.sendMessage(pluginPrefix + ChatColor.GREEN + "Your fly mode was changed by " + player.getName() + ".");
         } else {
-            player.setAllowFlight(true);
-            player.sendMessage(pluginPrefix + ChatColor.GREEN + "Fly mode enabled.");
+            if (!sender.hasPermission("beaconlabs.core.fly.self")) {
+                sender.sendMessage(pluginPrefix + ChatColor.RED + "You do not have permission to use this command.");
+                return true;
+            }
+            if (player.getAllowFlight()) {
+                player.setAllowFlight(false);
+                player.sendMessage(pluginPrefix + ChatColor.RED + "Fly mode disabled.");
+            } else {
+                player.setAllowFlight(true);
+                player.sendMessage(pluginPrefix + ChatColor.GREEN + "Fly mode enabled.");
+            }
         }
         return true;
     }

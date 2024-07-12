@@ -7,5 +7,48 @@ commands:
   fly:
     description: Toggles fly mode.
     usage: /fly
-    permission: beaconlabscore.fly
-    permission-message: "&cYou do not have permission to use this command."
+  core:
+    description: Returns basic plugin information
+    usage: /core
+    aliases: [beaconlabscore, labscore]
+  heal:
+    description: Heals a player
+    usage: /heal [player]
+  gamemode:
+    description: Changes a players gamemode
+    usage: /gamemode 0/1/2/3 [player]
+    aliases: [gm, mode]
+  invsee:
+    description: View another player's inventory.
+    usage: /invsee <player>
+  workbench:
+    description: Use a portable workbench.
+    usage: /workbench
+    aliases: [wb]
+  enderchest:
+    description: Use a portable enderchest.
+    usage: /enderchest
+    aliases: [ec]
+  vanish:
+    description: Hide yourself from other players
+    usage: /vanish [player]
+    aliases: [v]
+permissions:
+  beaconlabs.core.vanish.self:
+    description: Allows a player to vanish themselves.
+    default: op
+  beaconlabs.core.vanish.others:
+    description: Allows a player to vanish other players.
+    default: op
+  beaconlabs.core.vanish.see:
+    description: Allows a player to see vanished players.
+    default: op
+  beaconlabs.core.enderchest:
+    description: Allows access to the enderchest command.
+    default: op
+  beaconlabs.core.gamemode.self:
+    description: Allows changing your own game mode.
+    default: op
+  beaconlabs.core.gamemode.others:
+    description: Allows changing other players' game modes.
+    default: op
