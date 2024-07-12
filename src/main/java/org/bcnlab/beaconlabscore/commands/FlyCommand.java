@@ -1,4 +1,4 @@
-package org.bcnlab.beaconlabscore;
+package org.bcnlab.beaconlabscore.commands;
 
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
@@ -36,27 +36,50 @@ public class FlyCommand implements CommandExecutor {
                 return true;
             }
 
-            if (player.getAllowFlight()) {
-                target.setAllowFlight(false);
-            } else {
-                target.setAllowFlight(true);
+            boolean notify = true;
+            if (args.length > 1 && args[args.length - 1].equalsIgnoreCase("nonotify")) {
+                notify = false;
             }
 
-            sender.sendMessage(pluginPrefix + ChatColor.GREEN + "Made " + target.getName() + " fly.");
-            target.sendMessage(pluginPrefix + ChatColor.GREEN + "Your fly mode was changed by " + player.getName() + ".");
+            toggleFlight(target, notify);
+
+            if (notify) {
+                sender.sendMessage(pluginPrefix + ChatColor.GREEN + "Toggled fly mode for " + target.getName() + ".");
+                target.sendMessage(pluginPrefix + ChatColor.GREEN + "Your fly mode was toggled by " + player.getName() + ".");
+            } else {
+                sender.sendMessage(pluginPrefix + ChatColor.GREEN + "Toggled fly mode for " + target.getName() + " without notifying.");
+            }
         } else {
             if (!sender.hasPermission("beaconlabs.core.fly.self")) {
                 sender.sendMessage(pluginPrefix + ChatColor.RED + "You do not have permission to use this command.");
                 return true;
             }
+
+            toggleFlight(player, true);
             if (player.getAllowFlight()) {
-                player.setAllowFlight(false);
-                player.sendMessage(pluginPrefix + ChatColor.RED + "Fly mode disabled.");
-            } else {
-                player.setAllowFlight(true);
                 player.sendMessage(pluginPrefix + ChatColor.GREEN + "Fly mode enabled.");
+            } else {
+                player.sendMessage(pluginPrefix + ChatColor.RED + "Fly mode disabled.");
             }
         }
         return true;
+    }
+
+    private void toggleFlight(Player player, boolean notify) {
+        if (player.getAllowFlight()) {
+            player.setAllowFlight(false);
+            player.setFlying(false);
+        } else {
+            player.setAllowFlight(true);
+            player.setFlying(true);
+        }
+
+        if (notify) {
+            if (player.getAllowFlight()) {
+                player.sendMessage(pluginPrefix + ChatColor.GREEN + "Fly mode enabled.");
+            } else {
+                player.sendMessage(pluginPrefix + ChatColor.RED + "Fly mode disabled.");
+            }
+        }
     }
 }

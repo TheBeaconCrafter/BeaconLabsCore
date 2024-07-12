@@ -2,6 +2,11 @@ package org.bcnlab.beaconlabscore;
 
 import net.luckperms.api.LuckPerms;
 import net.luckperms.api.LuckPermsProvider;
+import org.bcnlab.beaconlabscore.commands.*;
+import org.bcnlab.beaconlabscore.listeners.ChatFormatter;
+import org.bcnlab.beaconlabscore.listeners.DeathMessages;
+import org.bcnlab.beaconlabscore.listeners.JoinLeaveMessages;
+import org.bcnlab.beaconlabscore.listeners.UnknownCommandListener;
 import org.bukkit.ChatColor;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.event.EventHandler;
@@ -41,6 +46,7 @@ public final class BeaconLabsCore extends JavaPlugin implements Listener {
         getServer().getPluginManager().registerEvents(this, this);
         getServer().getPluginManager().registerEvents(new JoinLeaveMessages(this), this);
         getServer().getPluginManager().registerEvents(new DeathMessages(this), this);
+        getServer().getPluginManager().registerEvents(new UnknownCommandListener(this), this);
         getCommand("fly").setExecutor(new FlyCommand(pluginPrefix));
         getCommand("core").setExecutor(new CoreCommand(this));
         getCommand("heal").setExecutor(new HealCommand(this));

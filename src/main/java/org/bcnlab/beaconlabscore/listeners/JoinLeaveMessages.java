@@ -1,5 +1,6 @@
-package org.bcnlab.beaconlabscore;
+package org.bcnlab.beaconlabscore.listeners;
 
+import org.bcnlab.beaconlabscore.BeaconLabsCore;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerJoinEvent;

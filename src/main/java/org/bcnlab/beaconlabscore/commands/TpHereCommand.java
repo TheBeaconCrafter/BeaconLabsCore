@@ -1,5 +1,6 @@
-package org.bcnlab.beaconlabscore;
+package org.bcnlab.beaconlabscore.commands;
 
+import org.bcnlab.beaconlabscore.BeaconLabsCore;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
@@ -7,11 +8,11 @@ import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
-public class TpCommand implements CommandExecutor {
+public class TpHereCommand implements CommandExecutor {
 
     private final BeaconLabsCore plugin;
 
-    public TpCommand(BeaconLabsCore plugin) {
+    public TpHereCommand(BeaconLabsCore plugin) {
         this.plugin = plugin;
     }
 
@@ -32,8 +33,8 @@ public class TpCommand implements CommandExecutor {
         }
 
         // Validate command usage
-        if (args.length < 1 || args.length > 2) {
-            player.sendMessage(plugin.getPrefix() + ChatColor.RED + "Usage: /tp <target> [destination]");
+        if (args.length != 1) {
+            player.sendMessage(plugin.getPrefix() + ChatColor.RED + "Usage: /tphere <player>");
             return true;
         }
 
@@ -46,24 +47,9 @@ public class TpCommand implements CommandExecutor {
             return true;
         }
 
-        // If only one argument is provided, teleport sender to target
-        if (args.length == 1) {
-            player.teleport(target.getLocation());
-            player.sendMessage(plugin.getPrefix() + ChatColor.GREEN + "Teleported to " + target.getName() + ".");
-        } else if (args.length == 2) {
-            String destinationName = args[1];
-            Player destination = Bukkit.getPlayer(destinationName);
-
-            // Check if the destination player is online
-            if (destination == null || !destination.isOnline()) {
-                player.sendMessage(plugin.getPrefix() + ChatColor.RED + "Player '" + destinationName + "' is not online.");
-                return true;
-            }
-
-            // Teleport target to destination
-            target.teleport(destination.getLocation());
-            player.sendMessage(plugin.getPrefix() + ChatColor.GREEN + "Teleported " + target.getName() + " to " + destination.getName() + ".");
-        }
+        // Teleport target to sender's location
+        target.teleport(player.getLocation());
+        player.sendMessage(plugin.getPrefix() + ChatColor.GREEN + "Teleported " + target.getName() + " to your location.");
 
         return true;
     }

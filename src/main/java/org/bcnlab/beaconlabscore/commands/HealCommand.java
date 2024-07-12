@@ -1,5 +1,6 @@
-package org.bcnlab.beaconlabscore;
+package org.bcnlab.beaconlabscore.commands;
 
+import org.bcnlab.beaconlabscore.BeaconLabsCore;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
@@ -36,25 +37,42 @@ public class HealCommand implements CommandExecutor {
                 return true;
             }
 
-            healPlayer(target);
-            sender.sendMessage(plugin.getPrefix() + ChatColor.GREEN + "You healed " + target.getName() + ".");
-            target.sendMessage(plugin.getPrefix() + ChatColor.GREEN + "You have been healed by " + player.getName() + ".");
+            boolean notify = true;
+            if (args.length > 1 && args[args.length - 1].equalsIgnoreCase("nonotify")) {
+                notify = false;
+            }
+
+            healPlayer(target, notify);
+
+            if(notify) {
+                sender.sendMessage(plugin.getPrefix() + ChatColor.GREEN + "You healed " + target.getName() + ".");
+            } else {
+                sender.sendMessage(plugin.getPrefix() + ChatColor.GREEN + "You healed " + target.getName() + " without notifying them.");
+            }
+
+            if (notify) {
+                target.sendMessage(plugin.getPrefix() + ChatColor.GREEN + "You have been healed by " + player.getName() + ".");
+            }
         } else {
             if (!sender.hasPermission("beaconlabs.core.heal.self")) {
-                sender.sendMessage(plugin.getPrefix() + ChatColor.RED + "You do not have permission to heal others.");
+                sender.sendMessage(plugin.getPrefix() + ChatColor.RED + "You do not have permission to heal yourself.");
                 return true;
             }
 
-            healPlayer(player);
+            healPlayer(player, true);
             player.sendMessage(plugin.getPrefix() + ChatColor.GREEN + "You healed yourself.");
         }
 
         return true;
     }
 
-    private void healPlayer(Player player) {
+    private void healPlayer(Player player, boolean notify) {
         player.setHealth(player.getMaxHealth());
         player.setFoodLevel(20);
         player.setFireTicks(0);
+
+        if (notify) {
+            player.sendMessage(plugin.getPrefix() + ChatColor.GREEN + "You have been healed.");
+        }
     }
 }

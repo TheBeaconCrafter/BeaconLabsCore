@@ -1,16 +1,17 @@
-package org.bcnlab.beaconlabscore;
+package org.bcnlab.beaconlabscore.commands;
 
+import org.bcnlab.beaconlabscore.BeaconLabsCore;
 import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
-public class CoreCommand implements CommandExecutor {
+public class EnderchestCommand implements CommandExecutor {
 
     private final BeaconLabsCore plugin;
 
-    public CoreCommand(BeaconLabsCore plugin) {
+    public EnderchestCommand(BeaconLabsCore plugin) {
         this.plugin = plugin;
     }
 
@@ -21,13 +22,14 @@ public class CoreCommand implements CommandExecutor {
             return true;
         }
 
-        if (!sender.hasPermission("beaconlabs.core.info")) {
+        Player player = (Player) sender;
+
+        if (!sender.hasPermission("beaconlabs.core.enderchest")) {
             sender.sendMessage(plugin.getPrefix() + ChatColor.RED + "You do not have permission to use this command.");
             return true;
         }
 
-        Player player = (Player) sender;
-        player.sendMessage(plugin.getPrefix() + ChatColor.RED + "BeaconLabsCore Version " + ChatColor.GOLD + plugin.getVersion() + ChatColor.RED + " by ItsBeacon");
+        player.openInventory(player.getEnderChest());
         return true;
     }
 }

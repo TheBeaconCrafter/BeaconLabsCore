@@ -1,5 +1,6 @@
-package org.bcnlab.beaconlabscore;
+package org.bcnlab.beaconlabscore.listeners;
 
+import org.bcnlab.beaconlabscore.BeaconLabsCore;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;

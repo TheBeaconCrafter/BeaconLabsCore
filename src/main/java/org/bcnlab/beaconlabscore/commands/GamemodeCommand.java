@@ -1,5 +1,6 @@
-package org.bcnlab.beaconlabscore;
+package org.bcnlab.beaconlabscore.commands;
 
+import org.bcnlab.beaconlabscore.BeaconLabsCore;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.GameMode;
@@ -26,7 +27,7 @@ public class GamemodeCommand implements CommandExecutor {
         Player player = (Player) sender;
 
         if (args.length == 0) {
-            sender.sendMessage(plugin.getPrefix() + ChatColor.RED + "Usage: /gamemode <mode> [player]");
+            sender.sendMessage(plugin.getPrefix() + ChatColor.RED + "Usage: /gamemode <mode> [player] [nonotify]");
             return true;
         }
 
@@ -46,21 +47,33 @@ public class GamemodeCommand implements CommandExecutor {
 
             setGameMode(player, gameMode);
             sender.sendMessage(plugin.getPrefix() + ChatColor.GREEN + "Your game mode has been changed to " + gameMode.toString().toLowerCase() + ".");
-        } else if (args.length == 2) {
+        } else if (args.length >= 2) {
+            boolean notify = true;
+            String playerName = args[1];
+
+            if (args.length > 2 && args[2].equalsIgnoreCase("nonotify")) {
+                notify = false;
+            }
+
             if (!sender.hasPermission("beaconlabs.core.gamemode.others")) {
                 sender.sendMessage(plugin.getPrefix() + ChatColor.RED + "You do not have permission to change other players' game modes.");
                 return true;
             }
 
-            Player target = Bukkit.getPlayer(args[1]);
+            Player target = Bukkit.getPlayer(playerName);
             if (target == null) {
-                sender.sendMessage(plugin.getPrefix() + ChatColor.RED + "Player not found: " + args[1] + ".");
+                sender.sendMessage(plugin.getPrefix() + ChatColor.RED + "Player not found: " + playerName + ".");
                 return true;
             }
 
             setGameMode(target, gameMode);
-            sender.sendMessage(plugin.getPrefix() + ChatColor.GREEN + "Changed game mode of " + target.getName() + " to " + gameMode.toString().toLowerCase() + ".");
-            target.sendMessage(plugin.getPrefix() + ChatColor.GREEN + "Your game mode has been changed to " + gameMode.toString().toLowerCase() + " by " + player.getName() + ".");
+
+            if (notify) {
+                sender.sendMessage(plugin.getPrefix() + ChatColor.GREEN + "Changed game mode of " + target.getName() + " to " + gameMode.toString().toLowerCase() + ".");
+                target.sendMessage(plugin.getPrefix() + ChatColor.GREEN + "Your game mode has been changed to " + gameMode.toString().toLowerCase() + " by " + player.getName() + ".");
+            } else {
+                sender.sendMessage(plugin.getPrefix() + ChatColor.GREEN + "Changed game mode of " + target.getName() + " to " + gameMode.toString().toLowerCase() + " without notification.");
+            }
         }
 
         return true;

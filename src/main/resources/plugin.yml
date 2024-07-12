@@ -6,17 +6,17 @@ api-version: '1.21'
 commands:
   fly:
     description: Toggles fly mode.
-    usage: /fly
+    usage: /fly [nonotify]
   core:
     description: Returns basic plugin information
     usage: /core
     aliases: [beaconlabscore, labscore]
   heal:
     description: Heals a player
-    usage: /heal [player]
+    usage: /heal [player] [nonotify]
   gamemode:
     description: Changes a players gamemode
-    usage: /gamemode 0/1/2/3 [player]
+    usage: /gamemode 0/1/2/3 [player] [nonotify]
     aliases: [gm, mode]
   invsee:
     description: View another player's inventory.
