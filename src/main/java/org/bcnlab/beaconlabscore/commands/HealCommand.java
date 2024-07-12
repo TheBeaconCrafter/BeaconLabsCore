@@ -38,7 +38,7 @@ public class HealCommand implements CommandExecutor {
             }
 
             boolean notify = true;
-            if (args.length > 1 && args[args.length - 1].equalsIgnoreCase("nonotify")) {
+            if (args.length > 1 && args[args.length - 1].equalsIgnoreCase("nonotify") || args.length > 1 && args[args.length - 1].equalsIgnoreCase("n")) {
                 notify = false;
             }
 

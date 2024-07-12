@@ -51,7 +51,7 @@ public class GamemodeCommand implements CommandExecutor {
             boolean notify = true;
             String playerName = args[1];
 
-            if (args.length > 2 && args[2].equalsIgnoreCase("nonotify")) {
+            if (args.length > 2 && args[2].equalsIgnoreCase("nonotify") || args.length > 2 && args[2].equalsIgnoreCase("n")) {
                 notify = false;
             }
 
