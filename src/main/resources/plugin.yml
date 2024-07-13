@@ -92,6 +92,9 @@ commands:
     description: Mute the entire chat
     usage: /globalmute
     aliases: [gmute]
+  btps:
+    description: Returns the servers TPS
+    usage: /btps
 permissions:
   beaconlabs.core.vanish.self:
     description: Allows a player to vanish themselves.

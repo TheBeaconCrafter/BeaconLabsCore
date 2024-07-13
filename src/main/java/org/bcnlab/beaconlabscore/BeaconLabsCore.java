@@ -51,6 +51,8 @@ public final class BeaconLabsCore extends JavaPlugin implements Listener {
         getServer().getPluginManager().registerEvents(new JoinLeaveMessages(this), this);
         getServer().getPluginManager().registerEvents(new DeathMessages(this), this);
         getServer().getPluginManager().registerEvents(new UnknownCommandListener(this), this);
+        getServer().getPluginManager().registerEvents(new BlockListener(this), this);
+        getServer().getPluginManager().registerEvents(new NametagGenerator(), this);
         getCommand("fly").setExecutor(new FlyCommand(pluginPrefix));
         getCommand("core").setExecutor(new CoreCommand(this));
         getCommand("heal").setExecutor(new HealCommand(this));
@@ -76,6 +78,7 @@ public final class BeaconLabsCore extends JavaPlugin implements Listener {
         getCommand("noon").setExecutor(new NoonCommand(this));
         getCommand("time").setExecutor(new TimeCommand(this));
         getCommand("globalmute").setExecutor(new GlobalMuteCommand(this));
+        getCommand("btps").setExecutor(new TpsCommand(this));
 
         // Plugin startup logic
         getLogger().info(pluginPrefix + "BeaconLabsCore was enabled!");

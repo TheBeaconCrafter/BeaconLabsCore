@@ -18,7 +18,7 @@ public class ServerBroadcastCommand implements CommandExecutor {
     @Override
     public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
         // Check if the command sender has permission
-        if (!sender.hasPermission("beaconlab.core.broadcast")) {
+        if (!sender.hasPermission("beaconlabs.core.broadcast")) {
             sender.sendMessage(plugin.getPrefix() + ChatColor.RED + "You do not have permission to use this command.");
             return true;
         }
