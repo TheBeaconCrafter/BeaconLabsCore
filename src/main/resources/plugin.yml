@@ -95,6 +95,10 @@ commands:
   btps:
     description: Returns the servers TPS
     usage: /btps
+  clearinventory:
+    description: Clears the inventory of players
+    usage: /clearinventory [player]
+    aliases: [clearinv, cinv]
 permissions:
   beaconlabs.core.vanish.self:
     description: Allows a player to vanish themselves.
