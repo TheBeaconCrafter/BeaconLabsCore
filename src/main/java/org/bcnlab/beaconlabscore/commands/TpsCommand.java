@@ -8,8 +8,6 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 
-import java.lang.reflect.Field;
-
 public class TpsCommand implements CommandExecutor {
 
     private final BeaconLabsCore plugin;
@@ -22,38 +20,42 @@ public class TpsCommand implements CommandExecutor {
     public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
         if (sender instanceof Player) {
             Player player = (Player) sender;
-            if (!player.hasPermission("beaconlabs.core.tps")) {
+            if (!player.hasPermission("beaconlabs.core.stats")) {
                 player.sendMessage(plugin.getPrefix() + "§cYou do not have permission to use this command.");
                 return true;
             }
         }
 
-        double tps = getServerTps();
+        Runtime runtime = Runtime.getRuntime();
+        long totalMemory = runtime.totalMemory();
+        long freeMemory = runtime.freeMemory();
+        long usedMemory = totalMemory - freeMemory;
+        long maxMemory = runtime.maxMemory();
+
         int totalEntities = 0;
         int livingEntities = 0;
 
-        for (Entity entity : Bukkit.getWorlds().get(0).getEntities()) { // Iterating over entities in the first world
-            totalEntities++;
-            if (entity.getType().isAlive()) {
-                livingEntities++;
+        for (org.bukkit.World world : Bukkit.getWorlds()) { // Iterate over all worlds
+            for (Entity entity : world.getEntities()) {
+                totalEntities++;
+                if (entity.getType().isAlive()) {
+                    livingEntities++;
+                }
             }
         }
 
         String message = String.format(
-                "§aServer TPS: §b%.2f\n§aTotal Entities: §b%d\n§aLiving Entities: §b%d",
-                tps, totalEntities, livingEntities
+                "§aMemory Usage:\n§bUsed: §e%.2f MB\n§bFree: §e%.2f MB\n§bTotal: §e%.2f MB\n§bMax: §e%.2f MB\n" +
+                        "§aEntities:\n§bTotal Entities: §e%d\n§bLiving Entities: §e%d",
+                usedMemory / 1048576.0,
+                freeMemory / 1048576.0,
+                totalMemory / 1048576.0,
+                maxMemory / 1048576.0,
+                totalEntities,
+                livingEntities
         );
 
         sender.sendMessage(plugin.getPrefix() + message);
         return true;
-    }
-
-    private double getServerTps() {
-        try {
-            return Bukkit.getServerTickManager().getTickRate(); // Returning the 1-minute TPS
-        } catch (Exception e) {
-            e.printStackTrace();
-            return -1;
-        }
     }
 }
