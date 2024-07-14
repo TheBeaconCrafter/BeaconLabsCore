@@ -79,6 +79,7 @@ public final class BeaconLabsCore extends JavaPlugin implements Listener {
         getCommand("globalmute").setExecutor(new GlobalMuteCommand(this));
         getCommand("btps").setExecutor(new TpsCommand(this));
         getCommand("clearinventory").setExecutor(new ClearInventoryCommand(this));
+        getCommand("clearlag").setExecutor(new ClearLagCommand(this));
 
         // Plugin startup logic
         getLogger().info(pluginPrefix + "BeaconLabsCore was enabled!");
@@ -174,7 +175,7 @@ public final class BeaconLabsCore extends JavaPlugin implements Listener {
         return customDeathMessage;
     }
 
-    public String getMoPermsMessage() {
+    public String getNoPermsMessage() {
         return noPermsMessage;
     }
 }

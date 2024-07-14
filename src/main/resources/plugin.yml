@@ -99,6 +99,10 @@ commands:
     description: Clears the inventory of players
     usage: /clearinventory [player]
     aliases: [clearinv, cinv]
+  clearlag:
+    description: Removes entities to preserver preformance
+    usage: /clearlag
+    aliases: [clag]
 permissions:
   beaconlabs.core.vanish.self:
     description: Allows a player to vanish themselves.

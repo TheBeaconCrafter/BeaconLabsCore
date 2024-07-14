@@ -24,7 +24,7 @@ public class GlobalMuteCommand implements CommandExecutor {
 
         Player player = (Player) sender;
         if (!player.hasPermission("beaconlabs.core.globalmute")) {
-            player.sendMessage(plugin.getPrefix() + ChatColor.translateAlternateColorCodes('&', plugin.getMoPermsMessage()));
+            player.sendMessage(plugin.getPrefix() + ChatColor.translateAlternateColorCodes('&', plugin.getNoPermsMessage()));
             return true;
         }
 
