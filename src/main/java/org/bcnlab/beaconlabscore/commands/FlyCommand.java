@@ -37,7 +37,7 @@ public class FlyCommand implements CommandExecutor {
             }
 
             boolean notify = true;
-            if (args.length > 1 && args[args.length - 1].equalsIgnoreCase("nonotify") || args.length > 1 && args[args.length - 1].equalsIgnoreCase("n")) {
+            if (args.length > 1 && (args[args.length - 1].equalsIgnoreCase("nonotify") || args[args.length - 1].equalsIgnoreCase("n"))) {
                 notify = false;
             }
 
@@ -56,11 +56,6 @@ public class FlyCommand implements CommandExecutor {
             }
 
             toggleFlight(player, true);
-            if (player.getAllowFlight()) {
-                player.sendMessage(pluginPrefix + ChatColor.GREEN + "Fly mode enabled.");
-            } else {
-                player.sendMessage(pluginPrefix + ChatColor.RED + "Fly mode disabled.");
-            }
         }
         return true;
     }
@@ -69,16 +64,14 @@ public class FlyCommand implements CommandExecutor {
         if (player.getAllowFlight()) {
             player.setAllowFlight(false);
             player.setFlying(false);
+            if (notify) {
+                player.sendMessage(pluginPrefix + ChatColor.RED + "Fly mode disabled.");
+            }
         } else {
             player.setAllowFlight(true);
             player.setFlying(true);
-        }
-
-        if (notify) {
-            if (player.getAllowFlight()) {
+            if (notify) {
                 player.sendMessage(pluginPrefix + ChatColor.GREEN + "Fly mode enabled.");
-            } else {
-                player.sendMessage(pluginPrefix + ChatColor.RED + "Fly mode disabled.");
             }
         }
     }
