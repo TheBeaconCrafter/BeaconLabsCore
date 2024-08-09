@@ -29,7 +29,7 @@ public class EndSpectateCommand implements CommandExecutor {
         Player player = (Player) sender;
 
         // Check permission
-        if (!player.hasPermission("beaconlabscore.endspectator")) {
+        if (!player.hasPermission("beaconlabs.core.endspectator")) {
             player.sendMessage(plugin.getPrefix() + ChatColor.RED + "You do not have permission to use this command.");
             return true;
         }

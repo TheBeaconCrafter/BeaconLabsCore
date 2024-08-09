@@ -112,6 +112,10 @@ commands:
   tpdeny:
     description: Deny a teleportation request
     usage: /tpdeny <player>
+  randomteleport:
+    description: Teleport to a random location on the world
+    usage: /randomteleport
+    aliases: [rtp]
 permissions:
   beaconlabs.core.vanish.self:
     description: Allows a player to vanish themselves.
@@ -158,3 +162,21 @@ permissions:
   beaconlabs.core.globalmute.ignore:
     description: Ignore global mute
     default: op
+  beaconlabs.core.spectate:
+    description: Spectate other players
+    default: op
+  beaconlabs.core.endspectate:
+    description: End the spec mode
+    default: op
+  beaconlabs.core.tpa:
+    description: Allows the user to send a tpa request to other users
+    default: not op
+  beaconlabs.core.tpaccept:
+    description: Allows users to accept tpa requests
+    default: not op
+  beaconlabs.core.tpdeny:
+    description: Allows users to deny tpa requests
+    default: not op
+  beaconlabs.core.rtp:
+    description: Allows a user to random teleport in the world
+    default: not op

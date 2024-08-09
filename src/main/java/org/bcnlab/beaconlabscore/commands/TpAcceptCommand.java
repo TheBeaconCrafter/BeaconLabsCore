@@ -26,6 +26,11 @@ public class TpAcceptCommand implements CommandExecutor {
 
         Player target = (Player) sender;
 
+        if (!sender.hasPermission("beaconlabs.core.tpaccept")) {
+            sender.sendMessage(pluginPrefix + ChatColor.RED + "You do not have permission to use this command.");
+            return true;
+        }
+
         if (args.length != 1) {
             sender.sendMessage(pluginPrefix + ChatColor.RED + "Usage: /tpaccept <player>");
             return true;

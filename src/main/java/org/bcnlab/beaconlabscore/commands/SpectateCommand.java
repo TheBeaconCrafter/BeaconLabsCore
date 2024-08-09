@@ -30,7 +30,7 @@ public class SpectateCommand implements CommandExecutor {
         Player player = (Player) sender;
 
         // Check permission
-        if (!player.hasPermission("beaconlabscore.spectate")) {
+        if (!player.hasPermission("beaconlabs.core.spectate")) {
             player.sendMessage(plugin.getPrefix() + ChatColor.RED + "You do not have permission to use this command.");
             return true;
         }

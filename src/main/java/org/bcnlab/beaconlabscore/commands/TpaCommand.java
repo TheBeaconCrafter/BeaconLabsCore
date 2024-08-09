@@ -28,6 +28,11 @@ public class TpaCommand implements CommandExecutor {
 
         Player player = (Player) sender;
 
+        if (!sender.hasPermission("beaconlabs.core.tpa")) {
+            sender.sendMessage(pluginPrefix + ChatColor.RED + "You do not have permission to use this command.");
+            return true;
+        }
+
         if (args.length != 1) {
             sender.sendMessage(pluginPrefix + ChatColor.RED + "Usage: /tpa <player>");
             return true;
@@ -46,7 +51,7 @@ public class TpaCommand implements CommandExecutor {
 
         tpaRequests.put(target.getName(), player.getName());
         sender.sendMessage(pluginPrefix + ChatColor.GREEN + "Teleport request sent to " + target.getName() + ".");
-        target.sendMessage(pluginPrefix + ChatColor.GOLD + player.getName() + " has requested to teleport to you. Type /tpaccept " + player.getName() + " to accept or /tpdeny to deny.");
+        target.sendMessage(pluginPrefix + ChatColor.GOLD + player.getName() + " has requested to teleport to you. Type" + ChatColor.RED +" /tpaccept " + player.getName() + ChatColor.GOLD +" to accept or" + ChatColor.RED + "/tpdeny" + ChatColor.GOLD + " to deny.");
 
         return true;
     }

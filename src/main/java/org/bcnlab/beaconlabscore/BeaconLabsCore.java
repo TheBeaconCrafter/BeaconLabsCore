@@ -20,7 +20,7 @@ import org.bukkit.plugin.java.JavaPlugin;
 public final class BeaconLabsCore extends JavaPlugin implements Listener {
 
     private String pluginPrefix;
-    private String pluginVersion = "1.0";
+    private String pluginVersion = "1.1";
     private ChatFormatter chatFormatter;
 
     //CONFIG
@@ -83,6 +83,7 @@ public final class BeaconLabsCore extends JavaPlugin implements Listener {
         getCommand("tpa").setExecutor(new TpaCommand(this.pluginPrefix));
         getCommand("tpaccept").setExecutor(new TpAcceptCommand(this.pluginPrefix));
         getCommand("tpdeny").setExecutor(new TpDenyCommand(this.pluginPrefix));
+        getCommand("randomteleport").setExecutor(new RandomTeleportCommand(this.pluginPrefix, 20000));
 
         // Plugin startup logic
         getLogger().info(pluginPrefix + "BeaconLabsCore was enabled!");

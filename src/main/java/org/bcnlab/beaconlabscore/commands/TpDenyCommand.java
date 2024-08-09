@@ -25,6 +25,11 @@ public class TpDenyCommand implements CommandExecutor {
 
         Player target = (Player) sender;
 
+        if (!sender.hasPermission("beaconlabs.core.tpdeny")) {
+            sender.sendMessage(pluginPrefix + ChatColor.RED + "You do not have permission to use this command.");
+            return true;
+        }
+
         String requesterName = tpaRequests.get(target.getName());
         if (requesterName == null) {
             sender.sendMessage(pluginPrefix + ChatColor.RED + "You have no pending teleport requests.");
