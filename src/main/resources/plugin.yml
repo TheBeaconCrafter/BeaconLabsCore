@@ -103,6 +103,15 @@ commands:
     description: Removes entities to preserver preformance
     usage: /clearlag
     aliases: [clag]
+  tpa:
+    description: Allows a user to request to teleport to someone else
+    usage: /tpa <player>
+  tpaccept:
+    description: Accept a teleportation request
+    usage: /tpaccept <player>
+  tpdeny:
+    description: Deny a teleportation request
+    usage: /tpdeny <player>
 permissions:
   beaconlabs.core.vanish.self:
     description: Allows a player to vanish themselves.

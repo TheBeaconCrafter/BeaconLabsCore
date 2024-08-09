@@ -80,6 +80,9 @@ public final class BeaconLabsCore extends JavaPlugin implements Listener {
         getCommand("btps").setExecutor(new TpsCommand(this));
         getCommand("clearinventory").setExecutor(new ClearInventoryCommand(this));
         getCommand("clearlag").setExecutor(new ClearLagCommand(this));
+        getCommand("tpa").setExecutor(new TpaCommand(this.pluginPrefix));
+        getCommand("tpaccept").setExecutor(new TpAcceptCommand(this.pluginPrefix));
+        getCommand("tpdeny").setExecutor(new TpDenyCommand(this.pluginPrefix));
 
         // Plugin startup logic
         getLogger().info(pluginPrefix + "BeaconLabsCore was enabled!");
