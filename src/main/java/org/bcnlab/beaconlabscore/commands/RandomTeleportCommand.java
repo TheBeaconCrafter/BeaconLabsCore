@@ -31,12 +31,14 @@ public class RandomTeleportCommand implements CommandExecutor {
         }
 
         Player player = (Player) sender;
-        Location randomLocation = getRandomSafeLocation(player.getWorld(), maxRange);
+
 
         if (!sender.hasPermission("beaconlabs.core.rtp")) {
             sender.sendMessage(pluginPrefix + ChatColor.RED + "You do not have permission to use this command.");
             return true;
         }
+
+        Location randomLocation = getRandomSafeLocation(player.getWorld(), maxRange); //IMPORTANT NOTE: THIS HAS TO BE GENERATED AFTER PERMISSION DENYING
 
         if (randomLocation != null) {
             player.teleport(randomLocation);
