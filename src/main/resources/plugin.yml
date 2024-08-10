@@ -116,6 +116,10 @@ commands:
     description: Teleport to a random location on the world
     usage: /randomteleport
     aliases: [rtp]
+  teleportcoordinates:
+    description: Teleports the user to specific coordinates
+    usage: /tpc (player) <x> <y> <z>
+    aliases: [tpc, teleportc]
 permissions:
   beaconlabs.core.vanish.self:
     description: Allows a player to vanish themselves.

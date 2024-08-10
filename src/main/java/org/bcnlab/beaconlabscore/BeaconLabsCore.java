@@ -84,6 +84,7 @@ public final class BeaconLabsCore extends JavaPlugin implements Listener {
         getCommand("tpaccept").setExecutor(new TpAcceptCommand(this.pluginPrefix));
         getCommand("tpdeny").setExecutor(new TpDenyCommand(this.pluginPrefix));
         getCommand("randomteleport").setExecutor(new RandomTeleportCommand(this.pluginPrefix, 5000));
+        getCommand("teleportcoordinates").setExecutor(new TpcCommand(this));
 
         // Plugin startup logic
         getLogger().info(pluginPrefix + "BeaconLabsCore was enabled!");
