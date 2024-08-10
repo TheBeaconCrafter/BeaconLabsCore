@@ -30,7 +30,7 @@ public class DayCommand implements CommandExecutor {
             return true;
         }
 
-        if (args.length == 0) {
+        if (args.length > 0) {
             sender.sendMessage(plugin.getPrefix() + ChatColor.RED + "Usage: /day");
             return true;
         }
