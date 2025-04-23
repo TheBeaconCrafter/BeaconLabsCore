@@ -30,6 +30,11 @@ public class TimeCommand implements CommandExecutor {
             return true;
         }
 
+        if (args.length == 0) {
+            sender.sendMessage(plugin.getPrefix() + ChatColor.RED + "Usage: /time <day|night|noon|midnight|number>");
+            return true;
+        }
+
         World world = player.getWorld();
         String timeArg = args[0].toLowerCase();
 
