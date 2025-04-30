@@ -144,6 +144,10 @@ commands:
   gmsp:
     description: Changes gamemode to spectator
     usage: /gmsp [player] [nonotify]
+  ench:
+    description: Enchant an item with any level up to 255
+    usage: /ench [player] <enchantment> <level>
+    aliases: [superenchant, powerenchant]
 permissions:
   beaconlabs.core.vanish.self:
     description: Allows a player to vanish themselves.
@@ -219,4 +223,10 @@ permissions:
     default: op
   beaconlabs.core.delwarp:
     description: Allows a player to delete warps
+    default: op
+  beaconlabs.core.enchant:
+    description: Allows a player to use the enhanced enchantment command
+    default: op
+  beaconlabs.core.enchant.bypass:
+    description: Allows a player to apply enchantments to any item regardless of compatibility
     default: op

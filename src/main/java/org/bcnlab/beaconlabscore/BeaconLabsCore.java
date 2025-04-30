@@ -116,6 +116,11 @@ public final class BeaconLabsCore extends JavaPlugin implements Listener {
         getCommand("gms").setExecutor(new GamemodeShortcutCommand(this, GameMode.SURVIVAL));
         getCommand("gma").setExecutor(new GamemodeShortcutCommand(this, GameMode.ADVENTURE));
         getCommand("gmsp").setExecutor(new GamemodeShortcutCommand(this, GameMode.SPECTATOR));
+        
+        // Register enchantment command
+        EnchantCommand enchantCommand = new EnchantCommand(this);
+        getCommand("ench").setExecutor(enchantCommand);
+        getCommand("ench").setTabCompleter(enchantCommand);
 
         // Plugin startup logic
         getLogger().info(pluginPrefix + "BeaconLabsCore was enabled!");

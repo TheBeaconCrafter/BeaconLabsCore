@@ -129,10 +129,15 @@ The plugin uses SQLite for storing warp locations:
 | ------------------------- | -------------------------------------- | --------------------------------- | ----------- |
 | /heal [player] [nonotify] | Heal self or another player            | `/heal [player] [nonotify]`       |             |
 | /gamemode                 | Change game mode                       | `/gamemode <mode> [player] [nonotify]` | `gm`, `mode` |
+| /gmc [player] [nonotify]  | Set gamemode to Creative               | `/gmc [player] [nonotify]`        |             |
+| /gms [player] [nonotify]  | Set gamemode to Survival               | `/gms [player] [nonotify]`        |             |
+| /gma [player] [nonotify]  | Set gamemode to Adventure              | `/gma [player] [nonotify]`        |             |
+| /gmsp [player] [nonotify] | Set gamemode to Spectator              | `/gmsp [player] [nonotify]`       |             |
 | /fly [nonotify]           | Toggle flight                          | `/fly [nonotify]`                 |             |
 | /vanish [player]          | Toggle invisibility                    | `/vanish [player]`                | `v`         |
 | /spectate `<player>`      | Spectate a player                      | `/spectate <player>`              | `spec`      |
 | /endspectate              | End spectator mode                     | `/endspectate`                    | `espec`     |
+| /ench [player] <ench> <lvl>| Enhanced enchantment with levels 1-255 | `/ench [player] <enchantment> <level>` | `superenchant`, `powerenchant` |
 
 ## Permissions
 
@@ -145,6 +150,9 @@ Permission nodes are defined in `src/main/resources/plugin.yml`. Some examples:
 - `beaconlabs.core.warps` — Allows viewing the list of warps (default: non-OP)
 - `beaconlabs.core.setwarp` — Allows creating warp points (default: OP)
 - `beaconlabs.core.delwarp` — Allows deleting warp points (default: OP)
+- `beaconlabs.core.warp.nodelay` — Bypass warp teleport delay (default: OP)
+- `beaconlabs.core.enchant` — Use enhanced enchantment command (default: OP)
+- `beaconlabs.core.enchant.bypass` — Apply enchantments to any item (default: OP)
 - etc.
 
 ## Contributing
