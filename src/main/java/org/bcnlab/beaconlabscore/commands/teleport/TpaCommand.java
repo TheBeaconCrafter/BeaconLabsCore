@@ -1,4 +1,4 @@
-package org.bcnlab.beaconlabscore.commands;
+package org.bcnlab.beaconlabscore.commands.teleport;
 
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;

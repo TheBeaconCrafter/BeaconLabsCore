@@ -1,4 +1,4 @@
-package org.bcnlab.beaconlabscore.commands;
+package org.bcnlab.beaconlabscore.commands.chat;
 
 import org.bcnlab.beaconlabscore.BeaconLabsCore;
 import org.bukkit.ChatColor;

@@ -1,4 +1,4 @@
-package org.bcnlab.beaconlabscore.commands;
+package org.bcnlab.beaconlabscore.commands.chat;
 
 import net.luckperms.api.LuckPerms;
 import net.luckperms.api.model.user.User;

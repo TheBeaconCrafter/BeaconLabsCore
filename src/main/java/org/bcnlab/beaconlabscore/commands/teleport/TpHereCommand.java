@@ -1,4 +1,4 @@
-package org.bcnlab.beaconlabscore.commands;
+package org.bcnlab.beaconlabscore.commands.teleport;
 
 import org.bcnlab.beaconlabscore.BeaconLabsCore;
 import org.bukkit.Bukkit;
@@ -8,11 +8,11 @@ import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
-public class SudoCommand implements CommandExecutor {
+public class TpHereCommand implements CommandExecutor {
 
     private final BeaconLabsCore plugin;
 
-    public SudoCommand(BeaconLabsCore plugin) {
+    public TpHereCommand(BeaconLabsCore plugin) {
         this.plugin = plugin;
     }
 
@@ -27,14 +27,14 @@ public class SudoCommand implements CommandExecutor {
         Player player = (Player) sender;
 
         // Check permission
-        if (!player.hasPermission("beaconlabs.core.sudo")) {
+        if (!player.hasPermission("beaconlabs.core.tp")) {
             player.sendMessage(plugin.getPrefix() + ChatColor.RED + "You do not have permission to use this command.");
             return true;
         }
 
         // Validate command usage
-        if (args.length < 2) {
-            player.sendMessage(plugin.getPrefix() + ChatColor.RED + "Usage: /sudo <player> <command> [args...]");
+        if (args.length != 1) {
+            player.sendMessage(plugin.getPrefix() + ChatColor.RED + "Usage: /tphere <player>");
             return true;
         }
 
@@ -47,21 +47,9 @@ public class SudoCommand implements CommandExecutor {
             return true;
         }
 
-        // Build the command to execute
-        StringBuilder commandBuilder = new StringBuilder();
-        for (int i = 1; i < args.length; i++) {
-            commandBuilder.append(args[i]).append(" ");
-        }
-        String commandToExecute = commandBuilder.toString().trim();
-
-        // Execute the command as the target player
-        boolean commandExecuted = Bukkit.dispatchCommand(target, commandToExecute);
-
-        if (commandExecuted) {
-            player.sendMessage(plugin.getPrefix() + ChatColor.GREEN + "Successfully executed command as " + target.getName() + ": /" + commandToExecute);
-        } else {
-            player.sendMessage(plugin.getPrefix() + ChatColor.RED + "Failed to execute command as " + target.getName() + ": /" + commandToExecute);
-        }
+        // Teleport target to sender's location
+        target.teleport(player.getLocation());
+        player.sendMessage(plugin.getPrefix() + ChatColor.GREEN + "Teleported " + target.getName() + " to your location.");
 
         return true;
     }

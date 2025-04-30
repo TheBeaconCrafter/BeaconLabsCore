@@ -1,4 +1,4 @@
-package org.bcnlab.beaconlabscore.commands;
+package org.bcnlab.beaconlabscore.commands.teleport;
 
 import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
@@ -6,7 +6,7 @@ import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
-import static org.bcnlab.beaconlabscore.commands.TpaCommand.tpaRequests;
+import static org.bcnlab.beaconlabscore.commands.teleport.TpaCommand.tpaRequests;
 
 public class TpDenyCommand implements CommandExecutor {
 

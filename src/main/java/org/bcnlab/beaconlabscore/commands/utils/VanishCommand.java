@@ -1,4 +1,4 @@
-package org.bcnlab.beaconlabscore.commands;
+package org.bcnlab.beaconlabscore.commands.utils;
 
 import net.md_5.bungee.api.ChatColor;
 import org.bcnlab.beaconlabscore.BeaconLabsCore;
