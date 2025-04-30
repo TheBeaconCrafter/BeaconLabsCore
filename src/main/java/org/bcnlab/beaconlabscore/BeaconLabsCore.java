@@ -121,6 +121,11 @@ public final class BeaconLabsCore extends JavaPlugin implements Listener {
         EnchantCommand enchantCommand = new EnchantCommand(this);
         getCommand("ench").setExecutor(enchantCommand);
         getCommand("ench").setTabCompleter(enchantCommand);
+        
+        // Register repair command
+        RepairCommand repairCommand = new RepairCommand(this);
+        getCommand("repair").setExecutor(repairCommand);
+        getCommand("repair").setTabCompleter(repairCommand);
 
         // Plugin startup logic
         getLogger().info(pluginPrefix + "BeaconLabsCore was enabled!");

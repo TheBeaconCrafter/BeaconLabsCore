@@ -138,6 +138,7 @@ The plugin uses SQLite for storing warp locations:
 | /spectate `<player>`      | Spectate a player                      | `/spectate <player>`              | `spec`      |
 | /endspectate              | End spectator mode                     | `/endspectate`                    | `espec`     |
 | /ench [player] <ench> <lvl>| Enhanced enchantment with levels 1-255 | `/ench [player] <enchantment> <level>` | `superenchant`, `powerenchant` |
+| /repair [player]          | Repair the held item                   | `/repair [player]`                |             |
 
 ## Permissions
 
@@ -153,6 +154,8 @@ Permission nodes are defined in `src/main/resources/plugin.yml`. Some examples:
 - `beaconlabs.core.warp.nodelay` — Bypass warp teleport delay (default: OP)
 - `beaconlabs.core.enchant` — Use enhanced enchantment command (default: OP)
 - `beaconlabs.core.enchant.bypass` — Apply enchantments to any item (default: OP)
+- `beaconlabs.core.repair` — Repair own items (default: OP)
+- `beaconlabs.core.repair.others` — Repair other players' items (default: OP)
 - etc.
 
 ## Contributing

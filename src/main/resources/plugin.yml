@@ -148,6 +148,9 @@ commands:
     description: Enchant an item with any level up to 255
     usage: /ench [player] <enchantment> <level>
     aliases: [superenchant, powerenchant]
+  repair:
+    description: Repair the item you are holding
+    usage: /repair [player]
 permissions:
   beaconlabs.core.vanish.self:
     description: Allows a player to vanish themselves.
@@ -229,4 +232,10 @@ permissions:
     default: op
   beaconlabs.core.enchant.bypass:
     description: Allows a player to apply enchantments to any item regardless of compatibility
+    default: op
+  beaconlabs.core.repair:
+    description: Allows a player to repair their own items
+    default: op
+  beaconlabs.core.repair.others:
+    description: Allows a player to repair other players' items
     default: op
