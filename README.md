@@ -10,6 +10,7 @@ A comprehensive Spigot plugin for Minecraft 1.21 that offers a suite of server a
 - Unknown command handler for mistyped commands
 - TPS and server performance stats
 - Random safe teleportation within world bounds
+- Warp system with SQLite database storage
 - Portable workbench and ender chest
 - Inventory viewing and clearing
 - Chat and command sudo
@@ -52,10 +53,18 @@ leave-messages:
 death-messages:
   enabled: true
   custom: "&c{player} was killed by {other}"
+warp-delay: 3
 ```
 
 - Color codes: `&` syntax (e.g. `&c` for red)
 - Placeholders: `{player}`, `{other}`
+- Warp delay: Time in seconds that players must wait before being teleported to a warp (bypass with permission)
+
+### Database
+
+The plugin uses SQLite for storing warp locations:
+- Warps are stored in `plugins/BeaconLabsCore/warps.db`
+- No additional configuration is needed for the database
 
 ## Commands
 
@@ -78,6 +87,10 @@ death-messages:
 | /tpdeny [player]       | Deny teleport request              | `/tpdeny [player]`              |                    |
 | /randomteleport        | Teleport to a random safe location | `/randomteleport`               | `rtp`              |
 | /teleportcoordinates   | Teleport by coordinates            | `/tpc [player] <x> <y> <z>`     | `tpc`, `teleportc` |
+| /warp `<name>`         | Teleport to a saved warp location  | `/warp <name>`                  |                    |
+| /setwarp `<name>`      | Create a new warp                  | `/setwarp <name>`               |                    |
+| /delwarp `<name>`      | Delete an existing warp            | `/delwarp <name>`               |                    |
+| /warps                 | List all available warps           | `/warps`                        |                    |
 
 ### Chat & Server
 
@@ -126,8 +139,12 @@ death-messages:
 Permission nodes are defined in `src/main/resources/plugin.yml`. Some examples:
 
 - `beaconlabs.core.vanish.self` — Allows a player to vanish themselves (default: OP)
-- `beaconlabs.core.spectate` — Allows spectating other players (default: OP)
+- `beaconlabs.core.spectate` — Allows spectating other players (default: OP) 
 - `beaconlabs.core.tpa` — Allows sending teleport requests (default: non-OP)
+- `beaconlabs.core.warp` — Allows using warp locations (default: non-OP)
+- `beaconlabs.core.warps` — Allows viewing the list of warps (default: non-OP)
+- `beaconlabs.core.setwarp` — Allows creating warp points (default: OP)
+- `beaconlabs.core.delwarp` — Allows deleting warp points (default: OP)
 - etc.
 
 ## Contributing

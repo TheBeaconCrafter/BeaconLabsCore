@@ -15,19 +15,23 @@ import org.bcnlab.beaconlabscore.commands.weather.RainCommand;
 import org.bcnlab.beaconlabscore.commands.weather.StormCommand;
 import org.bcnlab.beaconlabscore.commands.weather.WeatherCommand;
 import org.bcnlab.beaconlabscore.listeners.*;
+import org.bcnlab.beaconlabscore.utils.WarpManager;
 import org.bukkit.ChatColor;
+import org.bukkit.GameMode;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.AsyncPlayerChatEvent;
 import org.bukkit.plugin.java.JavaPlugin;
+import org.bukkit.command.TabCompleter;
 
 public final class BeaconLabsCore extends JavaPlugin implements Listener {
 
     private String pluginPrefix;
-    private String pluginVersion = "1.1";
+    private String pluginVersion = "1.2";
     private ChatFormatter chatFormatter;
+    private WarpManager warpManager;
 
     //CONFIG
     private boolean joinMessagesEnabled;
@@ -37,6 +41,7 @@ public final class BeaconLabsCore extends JavaPlugin implements Listener {
     private String customLeaveMessage;
     private String customDeathMessage;
     private String noPermsMessage = "&cYou do not have permission to use this command.";
+    private int warpDelay; // Delay in seconds for warp teleportation
 
     @Override
     public void onEnable() {
@@ -48,6 +53,9 @@ public final class BeaconLabsCore extends JavaPlugin implements Listener {
 
         LuckPerms luckPerms = LuckPermsProvider.get();
         chatFormatter = new ChatFormatter(this, luckPerms);
+        
+        // Initialize the WarpManager
+        warpManager = new WarpManager(this);
 
         // Register JoinLeaveMessages listener
         new JoinLeaveMessages(this);
@@ -91,6 +99,23 @@ public final class BeaconLabsCore extends JavaPlugin implements Listener {
         getCommand("tpdeny").setExecutor(new TpDenyCommand(this.pluginPrefix));
         getCommand("randomteleport").setExecutor(new RandomTeleportCommand(this.pluginPrefix, 5000));
         getCommand("teleportcoordinates").setExecutor(new TpcCommand(this));
+        
+        // Register warp commands
+        getCommand("warp").setExecutor(new WarpCommand(this, warpManager));
+        getCommand("setwarp").setExecutor(new SetWarpCommand(this, warpManager));
+        getCommand("delwarp").setExecutor(new DelWarpCommand(this, warpManager));
+        getCommand("warps").setExecutor(new WarpsCommand(this, warpManager));
+        
+        // Register tab completers for warp commands
+        getCommand("warp").setTabCompleter((TabCompleter) getCommand("warp").getExecutor());
+        getCommand("delwarp").setTabCompleter((TabCompleter) getCommand("delwarp").getExecutor());
+        getCommand("warps").setTabCompleter((TabCompleter) getCommand("warps").getExecutor());
+        
+        // Register gamemode shortcut commands
+        getCommand("gmc").setExecutor(new GamemodeShortcutCommand(this, GameMode.CREATIVE));
+        getCommand("gms").setExecutor(new GamemodeShortcutCommand(this, GameMode.SURVIVAL));
+        getCommand("gma").setExecutor(new GamemodeShortcutCommand(this, GameMode.ADVENTURE));
+        getCommand("gmsp").setExecutor(new GamemodeShortcutCommand(this, GameMode.SPECTATOR));
 
         // Plugin startup logic
         getLogger().info(pluginPrefix + "BeaconLabsCore was enabled!");
@@ -115,6 +140,11 @@ public final class BeaconLabsCore extends JavaPlugin implements Listener {
 
     @Override
     public void onDisable() {
+        // Close the warp database connection
+        if (warpManager != null) {
+            warpManager.closeConnection();
+        }
+        
         // Plugin shutdown logic
         getLogger().info(pluginPrefix + "BeaconLabsCore was disabled!");
     }
@@ -133,6 +163,9 @@ public final class BeaconLabsCore extends JavaPlugin implements Listener {
         customJoinMessage = config.getString("join-messages.custom", "&6[+] PLEASE RESTART FOR THIS TO WORK");
         customLeaveMessage = config.getString("leave-messages.custom", "&6[-] PLEASE RESTART FOR THIS TO WORK");
         customDeathMessage = config.getString("death-messages.custom", "&4&lERROR");
+        
+        // Load warp delay
+        warpDelay = config.getInt("warp-delay", 3);
 
         // Translate color codes in custom messages
         customJoinMessage = ChatColor.translateAlternateColorCodes('&', customJoinMessage);
@@ -151,6 +184,7 @@ public final class BeaconLabsCore extends JavaPlugin implements Listener {
         config.addDefault("leave-messages.custom", "&7[&a-&7] &9{player}");
         config.addDefault("death-messages.enabled", true);
         config.addDefault("death-messages.custom", "&c{player} was killed by {other}");
+        config.addDefault("warp-delay", 3);
         saveConfig();
     }
 
@@ -188,5 +222,9 @@ public final class BeaconLabsCore extends JavaPlugin implements Listener {
 
     public String getNoPermsMessage() {
         return noPermsMessage;
+    }
+    
+    public int getWarpDelay() {
+        return warpDelay;
     }
 }

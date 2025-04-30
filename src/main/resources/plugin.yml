@@ -120,6 +120,30 @@ commands:
     description: Teleports the user to specific coordinates
     usage: /tpc (player) <x> <y> <z>
     aliases: [tpc, teleportc]
+  warp:
+    description: Teleports to a warp location
+    usage: /warp <name>
+  setwarp:
+    description: Creates a new warp at your current location
+    usage: /setwarp <name>
+  delwarp:
+    description: Deletes an existing warp
+    usage: /delwarp <name>
+  warps:
+    description: Lists all available warps
+    usage: /warps
+  gmc:
+    description: Changes gamemode to creative
+    usage: /gmc [player] [nonotify]
+  gms:
+    description: Changes gamemode to survival
+    usage: /gms [player] [nonotify]
+  gma:
+    description: Changes gamemode to adventure
+    usage: /gma [player] [nonotify]
+  gmsp:
+    description: Changes gamemode to spectator
+    usage: /gmsp [player] [nonotify]
 permissions:
   beaconlabs.core.vanish.self:
     description: Allows a player to vanish themselves.
@@ -184,3 +208,15 @@ permissions:
   beaconlabs.core.rtp:
     description: Allows a user to random teleport in the world
     default: not op
+  beaconlabs.core.warp:
+    description: Allows a player to use warps
+    default: not op
+  beaconlabs.core.warps:
+    description: Allows a player to view the list of warps
+    default: not op
+  beaconlabs.core.setwarp:
+    description: Allows a player to create warps
+    default: op
+  beaconlabs.core.delwarp:
+    description: Allows a player to delete warps
+    default: op

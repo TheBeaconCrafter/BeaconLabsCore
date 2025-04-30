@@ -6,7 +6,7 @@
 
   <groupId>org.bcnlab</groupId>
   <artifactId>BeaconLabsCore</artifactId>
-  <version>1.1</version>
+  <version>1.2</version>
   <packaging>jar</packaging>
 
   <name>BeaconLabsCore</name>
@@ -72,6 +72,12 @@
           <artifactId>api</artifactId>
           <version>5.4</version>
           <scope>provided</scope>
+      </dependency>
+      <dependency>
+          <groupId>org.xerial</groupId>
+          <artifactId>sqlite-jdbc</artifactId>
+          <version>3.36.0.3</version>
+          <scope>compile</scope>
       </dependency>
   </dependencies>
 </project>
