@@ -1198,7 +1198,7 @@ public final class BeaconLabsCore extends JavaPlugin implements Listener {
     }
 
     public Component getPrefix() {
-        return LegacyComponentSerializer.legacyAmpersand().deserialize(pluginPrefix);
+        return MiniMessage.miniMessage().deserialize(pluginPrefix);
     }
 
     public String getVersion() {
