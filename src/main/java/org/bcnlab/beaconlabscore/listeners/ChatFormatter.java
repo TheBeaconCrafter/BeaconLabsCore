@@ -62,22 +62,12 @@ public class ChatFormatter {
         if (prefix == null) prefix = "";
         if (suffix == null) suffix = "";
 
-        Component prefixComponent = Component.empty();
-        if (prefix != null && !prefix.isEmpty()) {
-            if (prefix.contains("&") || prefix.contains("§")) {
-                prefixComponent = LegacyComponentSerializer.legacyAmpersand().deserialize(prefix.replace("§", "&"));
-            } else {
-                prefixComponent = net.kyori.adventure.text.minimessage.MiniMessage.miniMessage().deserialize(prefix);
-            }
-        }
-        
-        Component suffixComponent = Component.empty();
-        if (suffix != null && !suffix.isEmpty()) {
-            if (suffix.contains("&") || suffix.contains("§")) {
-                suffixComponent = LegacyComponentSerializer.legacyAmpersand().deserialize(suffix.replace("§", "&"));
-            } else {
-                suffixComponent = net.kyori.adventure.text.minimessage.MiniMessage.miniMessage().deserialize(suffix);
-            }
+        String nameStr = prefix + displayName + suffix;
+        Component nameComponent;
+        if (nameStr.contains("&") || nameStr.contains("§")) {
+            nameComponent = LegacyComponentSerializer.legacyAmpersand().deserialize(nameStr.replace("§", "&"));
+        } else {
+            nameComponent = net.kyori.adventure.text.minimessage.MiniMessage.miniMessage().deserialize(nameStr);
         }
 
         Component msgComponent;
@@ -91,7 +81,9 @@ public class ChatFormatter {
             }
         }
         
-        return Component.empty().append(prefixComponent).append(Component.text(displayName)).append(suffixComponent).append(Component.text(": ")).append(msgComponent);
+        // Use a reset color for the colon and message so the name color doesn't bleed if it were serialized differently, 
+        // but since we are appending them as separate components, they will be default color anyway.
+        return Component.empty().append(nameComponent).append(Component.text(": ")).append(msgComponent);
     }
 
     public void onPlayerChat(Player player, String message) {
