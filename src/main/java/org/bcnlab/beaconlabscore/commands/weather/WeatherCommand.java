@@ -1,7 +1,8 @@
 package org.bcnlab.beaconlabscore.commands.weather;
 
 import org.bcnlab.beaconlabscore.BeaconLabsCore;
-import org.bukkit.ChatColor;
+import net.kyori.adventure.text.minimessage.MiniMessage;
+import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
@@ -19,19 +20,19 @@ public class WeatherCommand implements CommandExecutor {
     @Override
     public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
         if (!(sender instanceof Player)) {
-            sender.sendMessage(ChatColor.RED + "Only players can use this command.");
+            sender.sendMessage(MiniMessage.miniMessage().deserialize("<red>Only players can use this command."));
             return true;
         }
 
         Player player = (Player) sender;
 
         if (!player.hasPermission("beaconlabs.core.weather")) {
-            player.sendMessage(plugin.getPrefix() + ChatColor.RED + "You do not have permission to change the weather.");
+            player.sendMessage(plugin.getPrefix().append(MiniMessage.miniMessage().deserialize("<red>You do not have permission to change the weather.")));
             return true;
         }
 
         if (args.length == 0) {
-            sender.sendMessage(plugin.getPrefix() + ChatColor.RED + "Usage: /weather <clear|rain|storm>");
+            sender.sendMessage(plugin.getPrefix().append(MiniMessage.miniMessage().deserialize("<red>Usage: /weather <clear|rain|storm>")));
             return true;
         }
 
@@ -42,20 +43,20 @@ public class WeatherCommand implements CommandExecutor {
             case "clear":
                 world.setStorm(false);
                 world.setThundering(false);
-                player.sendMessage(plugin.getPrefix() + ChatColor.GREEN + "Set weather to clear.");
+                player.sendMessage(plugin.getPrefix().append(MiniMessage.miniMessage().deserialize("<green>Set weather to clear.")));
                 break;
             case "rain":
                 world.setStorm(true);
                 world.setThundering(false);
-                player.sendMessage(plugin.getPrefix() + ChatColor.GREEN + "Set weather to rain.");
+                player.sendMessage(plugin.getPrefix().append(MiniMessage.miniMessage().deserialize("<green>Set weather to rain.")));
                 break;
             case "storm":
                 world.setStorm(true);
                 world.setThundering(true);
-                player.sendMessage(plugin.getPrefix() + ChatColor.GREEN + "Set weather to thunderstorm.");
+                player.sendMessage(plugin.getPrefix().append(MiniMessage.miniMessage().deserialize("<green>Set weather to thunderstorm.")));
                 break;
             default:
-                player.sendMessage(plugin.getPrefix() + ChatColor.RED + "Invalid weather type. Use: clear, rain, storm");
+                player.sendMessage(plugin.getPrefix().append(MiniMessage.miniMessage().deserialize("<red>Invalid weather type. Use: clear, rain, storm")));
                 break;
         }
 

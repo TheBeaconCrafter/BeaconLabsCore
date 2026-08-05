@@ -1,7 +1,9 @@
 package org.bcnlab.beaconlabscore.commands.player;
 
 import org.bukkit.Bukkit;
-import org.bukkit.ChatColor;
+import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.minimessage.MiniMessage;
+import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
@@ -9,16 +11,16 @@ import org.bukkit.entity.Player;
 
 public class FlyCommand implements CommandExecutor {
 
-    private final String pluginPrefix;
+    private final Component pluginPrefix;
 
     public FlyCommand(String pluginPrefix) {
-        this.pluginPrefix = ChatColor.translateAlternateColorCodes('&', pluginPrefix);
+        this.pluginPrefix = LegacyComponentSerializer.legacyAmpersand().deserialize(pluginPrefix);
     }
 
     @Override
     public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
         if (!(sender instanceof Player)) {
-            sender.sendMessage(pluginPrefix + ChatColor.RED + "This command can only be used by players.");
+            sender.sendMessage(pluginPrefix.append(MiniMessage.miniMessage().deserialize("<red>This command can only be used by players.")));
             return true;
         }
 
@@ -26,13 +28,13 @@ public class FlyCommand implements CommandExecutor {
 
         if (args.length > 0) {
             if (!sender.hasPermission("beaconlabs.core.fly.others")) {
-                sender.sendMessage(pluginPrefix + ChatColor.RED + "You do not have permission to fly others.");
+                sender.sendMessage(pluginPrefix.append(MiniMessage.miniMessage().deserialize("<red>You do not have permission to fly others.")));
                 return true;
             }
 
             Player target = Bukkit.getPlayer(args[0]);
             if (target == null) {
-                sender.sendMessage(pluginPrefix + ChatColor.RED + "Player not found: " + args[0]);
+                sender.sendMessage(pluginPrefix.append(MiniMessage.miniMessage().deserialize("<red>Player not found: " + args[0])));
                 return true;
             }
 
@@ -44,14 +46,14 @@ public class FlyCommand implements CommandExecutor {
             toggleFlight(target, notify);
 
             if (notify) {
-                sender.sendMessage(pluginPrefix + ChatColor.GREEN + "Toggled fly mode for " + target.getName() + ".");
-                target.sendMessage(pluginPrefix + ChatColor.GREEN + "Your fly mode was toggled by " + player.getName() + ".");
+                sender.sendMessage(pluginPrefix.append(MiniMessage.miniMessage().deserialize("<green>Toggled fly mode for " + target.getName() + ".")));
+                target.sendMessage(pluginPrefix.append(MiniMessage.miniMessage().deserialize("<green>Your fly mode was toggled by " + player.getName() + ".")));
             } else {
-                sender.sendMessage(pluginPrefix + ChatColor.GREEN + "Toggled fly mode for " + target.getName() + " without notifying.");
+                sender.sendMessage(pluginPrefix.append(MiniMessage.miniMessage().deserialize("<green>Toggled fly mode for " + target.getName() + " without notifying.")));
             }
         } else {
             if (!sender.hasPermission("beaconlabs.core.fly.self")) {
-                sender.sendMessage(pluginPrefix + ChatColor.RED + "You do not have permission to use this command.");
+                sender.sendMessage(pluginPrefix.append(MiniMessage.miniMessage().deserialize("<red>You do not have permission to use this command.")));
                 return true;
             }
 
@@ -65,13 +67,13 @@ public class FlyCommand implements CommandExecutor {
             player.setAllowFlight(false);
             player.setFlying(false);
             if (notify) {
-                player.sendMessage(pluginPrefix + ChatColor.RED + "Fly mode disabled.");
+                player.sendMessage(pluginPrefix.append(MiniMessage.miniMessage().deserialize("<red>Fly mode disabled.")));
             }
         } else {
             player.setAllowFlight(true);
             player.setFlying(true);
             if (notify) {
-                player.sendMessage(pluginPrefix + ChatColor.GREEN + "Fly mode enabled.");
+                player.sendMessage(pluginPrefix.append(MiniMessage.miniMessage().deserialize("<green>Fly mode enabled.")));
             }
         }
     }

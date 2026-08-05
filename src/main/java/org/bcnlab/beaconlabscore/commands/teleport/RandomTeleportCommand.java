@@ -1,6 +1,8 @@
 package org.bcnlab.beaconlabscore.commands.teleport;
 
-import org.bukkit.ChatColor;
+import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.minimessage.MiniMessage;
+import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.World;
@@ -13,20 +15,20 @@ import java.util.Random;
 
 public class RandomTeleportCommand implements CommandExecutor {
 
-    private final String pluginPrefix;
+    private final Component pluginPrefix;
     private final int maxRange; // Maximum range for teleportation (e.g., 5000 blocks)
     private final int minHeight = 64; // Minimum height to start checking for safe locations
     private final int maxHeight = 256; // Maximum height to check for safe locations
 
     public RandomTeleportCommand(String pluginPrefix, int maxRange) {
-        this.pluginPrefix = ChatColor.translateAlternateColorCodes('&', pluginPrefix);
+        this.pluginPrefix = LegacyComponentSerializer.legacyAmpersand().deserialize(pluginPrefix);
         this.maxRange = maxRange;
     }
 
     @Override
     public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
         if (!(sender instanceof Player)) {
-            sender.sendMessage(pluginPrefix + ChatColor.RED + "This command can only be used by players.");
+            sender.sendMessage(pluginPrefix.append(MiniMessage.miniMessage().deserialize("<red>This command can only be used by players.")));
             return true;
         }
 
@@ -34,7 +36,7 @@ public class RandomTeleportCommand implements CommandExecutor {
 
 
         if (!sender.hasPermission("beaconlabs.core.rtp")) {
-            sender.sendMessage(pluginPrefix + ChatColor.RED + "You do not have permission to use this command.");
+            sender.sendMessage(pluginPrefix.append(MiniMessage.miniMessage().deserialize("<red>You do not have permission to use this command.")));
             return true;
         }
 
@@ -42,12 +44,12 @@ public class RandomTeleportCommand implements CommandExecutor {
 
         if (randomLocation != null) {
             player.teleport(randomLocation);
-            player.sendMessage(pluginPrefix + ChatColor.GREEN + "Teleported to a random location: " +
+            player.sendMessage(pluginPrefix.append(MiniMessage.miniMessage().deserialize("<green>Teleported to a random location: " +
                     "X: " + randomLocation.getBlockX() +
                     " Y: " + randomLocation.getBlockY() +
-                    " Z: " + randomLocation.getBlockZ());
+                    " Z: " + randomLocation.getBlockZ())));
         } else {
-            player.sendMessage(pluginPrefix + ChatColor.RED + "Failed to find a safe location to teleport.");
+            player.sendMessage(pluginPrefix.append(MiniMessage.miniMessage().deserialize("<red>Failed to find a safe location to teleport.")));
         }
 
         return true;

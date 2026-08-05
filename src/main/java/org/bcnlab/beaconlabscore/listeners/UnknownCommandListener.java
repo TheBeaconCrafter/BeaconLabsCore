@@ -1,5 +1,6 @@
 package org.bcnlab.beaconlabscore.listeners;
 
+import net.kyori.adventure.text.minimessage.MiniMessage;
 import org.bcnlab.beaconlabscore.BeaconLabsCore;
 import org.bukkit.Bukkit;
 import org.bukkit.Sound;
@@ -25,7 +26,8 @@ public class UnknownCommandListener implements Listener {
         if (Bukkit.getServer().getHelpMap().getHelpTopic(args[0]) == null) {
             e.setCancelled(true);
 
-            p.sendMessage(plugin.getPrefix() + "§cThe command §8[§a" + msg + "§8]§c doesn't exist!");
+            p.sendMessage(plugin.getPrefix().append(MiniMessage.miniMessage().deserialize(
+                    "<red>The command <dark_gray>[<green>" + msg + "<dark_gray>]<red> doesn't exist!")));
         }
     }
 

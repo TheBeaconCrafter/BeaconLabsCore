@@ -2,7 +2,8 @@ package org.bcnlab.beaconlabscore.commands.teleport;
 
 import org.bcnlab.beaconlabscore.BeaconLabsCore;
 import org.bcnlab.beaconlabscore.utils.WarpManager;
-import org.bukkit.ChatColor;
+import net.kyori.adventure.text.minimessage.MiniMessage;
+import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
@@ -25,31 +26,31 @@ public class WarpsCommand implements CommandExecutor, TabCompleter {
     @Override
     public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
         if (!sender.hasPermission("beaconlabs.core.warps")) {
-            sender.sendMessage(plugin.getPrefix() + ChatColor.translateAlternateColorCodes('&', plugin.getNoPermsMessage()));
+            sender.sendMessage(plugin.getPrefix().append(LegacyComponentSerializer.legacyAmpersand().deserialize(plugin.getNoPermsMessage())));
             return true;
         }
         
         Set<String> warpNames = warpManager.getWarpNames();
         
         if (warpNames.isEmpty()) {
-            sender.sendMessage(plugin.getPrefix() + ChatColor.YELLOW + "There are no warps set on this server.");
+            sender.sendMessage(plugin.getPrefix().append(MiniMessage.miniMessage().deserialize("<yellow>There are no warps set on this server.")));
             return true;
         }
         
-        sender.sendMessage(plugin.getPrefix() + ChatColor.GREEN + "Available warps:");
+        sender.sendMessage(plugin.getPrefix().append(MiniMessage.miniMessage().deserialize("<green>Available warps:")));
         
         StringBuilder warpList = new StringBuilder();
         int count = 0;
         
         for (String warp : warpNames) {
             if (count > 0) {
-                warpList.append(ChatColor.GRAY).append(", ");
+                warpList.append("<gray>, ");
             }
-            warpList.append(ChatColor.AQUA).append(warp);
+            warpList.append("<aqua>").append(warp);
             count++;
         }
         
-        sender.sendMessage(warpList.toString());
+        sender.sendMessage(MiniMessage.miniMessage().deserialize(warpList.toString()));
         
         return true;
     }

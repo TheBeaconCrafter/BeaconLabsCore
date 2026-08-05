@@ -2,7 +2,9 @@ package org.bcnlab.beaconlabscore.commands.chat;
 
 import org.bcnlab.beaconlabscore.BeaconLabsCore;
 import org.bukkit.Bukkit;
-import org.bukkit.ChatColor;
+import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.minimessage.MiniMessage;
+import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
@@ -19,13 +21,13 @@ public class ServerBroadcastCommand implements CommandExecutor {
     public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
         // Check if the command sender has permission
         if (!sender.hasPermission("beaconlabs.core.broadcast")) {
-            sender.sendMessage(plugin.getPrefix() + ChatColor.RED + "You do not have permission to use this command.");
+            sender.sendMessage(plugin.getPrefix().append(MiniMessage.miniMessage().deserialize("<red>You do not have permission to use this command.")));
             return true;
         }
 
         // Validate command usage
         if (args.length < 1) {
-            sender.sendMessage(plugin.getPrefix() + ChatColor.RED + "Usage: /sbc <message>");
+            sender.sendMessage(plugin.getPrefix().append(MiniMessage.miniMessage().deserialize("<red>Usage: /sbc <message>")));
             return true;
         }
 
@@ -33,10 +35,10 @@ public class ServerBroadcastCommand implements CommandExecutor {
         String message = String.join(" ", args);
 
         // Format the broadcast message
-        String formattedMessage = ChatColor.translateAlternateColorCodes('&', "&8[&6S-Broadcast&8] &r" + message);
+        Component formattedMessage = LegacyComponentSerializer.legacyAmpersand().deserialize("&8[&6S-Broadcast&8] &r" + message);
 
         // Broadcast the message to the entire server
-        Bukkit.broadcastMessage(formattedMessage);
+        Bukkit.broadcast(formattedMessage);
 
         return true;
     }

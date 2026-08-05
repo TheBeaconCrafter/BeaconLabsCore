@@ -1,5 +1,6 @@
 package org.bcnlab.beaconlabscore.listeners;
 
+import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer;
 import org.bcnlab.beaconlabscore.BeaconLabsCore;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -17,20 +18,22 @@ public class JoinLeaveMessages implements Listener {
     @EventHandler
     public void onPlayerJoin(PlayerJoinEvent event) {
         if (!plugin.areJoinMessagesEnabled()) {
-            event.setJoinMessage(null); // Suppress join message if disabled
+            event.joinMessage(null); // Suppress join message if disabled
         } else {
             String message = formatMessage(plugin.getCustomJoinMessage(), event.getPlayer().getName());
-            event.setJoinMessage(message);
+            event.joinMessage(LegacyComponentSerializer.legacySection().deserialize(
+                    LegacyComponentSerializer.legacySection().serialize(
+                            LegacyComponentSerializer.legacyAmpersand().deserialize(message))));
         }
     }
 
     @EventHandler
     public void onPlayerQuit(PlayerQuitEvent event) {
         if (!plugin.areLeaveMessagesEnabled()) {
-            event.setQuitMessage(null); // Suppress leave message if disabled
+            event.quitMessage(null); // Suppress leave message if disabled
         } else {
             String message = formatMessage(plugin.getCustomLeaveMessage(), event.getPlayer().getName());
-            event.setQuitMessage(message);
+            event.quitMessage(LegacyComponentSerializer.legacyAmpersand().deserialize(message));
         }
     }
 

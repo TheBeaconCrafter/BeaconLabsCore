@@ -1,7 +1,8 @@
 package org.bcnlab.beaconlabscore.listeners;
 
+import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer;
 import org.bcnlab.beaconlabscore.BeaconLabsCore;
-import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -20,7 +21,7 @@ public class DeathMessages implements Listener {
     @EventHandler
     public void onPlayerDeath(PlayerDeathEvent event) {
         if (!plugin.areDeathMessagesEnabled()) {
-            event.setDeathMessage(null);
+            event.deathMessage(null);
             return;
         }
 
@@ -45,13 +46,14 @@ public class DeathMessages implements Listener {
             }
         }
 
-        event.setDeathMessage(deathMessage);
+        event.deathMessage(LegacyComponentSerializer.legacySection().deserialize(deathMessage));
     }
 
     private String formatMessage(String message, String playerName, String other) {
         // Replace {player} and {other} placeholders with actual names
         message = message.replace("{player}", playerName);
         message = message.replace("{other}", other);
-        return ChatColor.translateAlternateColorCodes('&', message);
+        return LegacyComponentSerializer.legacySection().serialize(
+                LegacyComponentSerializer.legacyAmpersand().deserialize(message));
     }
 }

@@ -2,7 +2,8 @@ package org.bcnlab.beaconlabscore.commands.teleport;
 
 import org.bcnlab.beaconlabscore.BeaconLabsCore;
 import org.bcnlab.beaconlabscore.utils.WarpManager;
-import org.bukkit.ChatColor;
+import net.kyori.adventure.text.minimessage.MiniMessage;
+import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
@@ -26,28 +27,28 @@ public class DelWarpCommand implements CommandExecutor, TabCompleter {
     @Override
     public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
         if (!sender.hasPermission("beaconlabs.core.delwarp")) {
-            sender.sendMessage(plugin.getPrefix() + ChatColor.translateAlternateColorCodes('&', plugin.getNoPermsMessage()));
+            sender.sendMessage(plugin.getPrefix().append(LegacyComponentSerializer.legacyAmpersand().deserialize(plugin.getNoPermsMessage())));
             return true;
         }
         
         if (args.length < 1) {
-            sender.sendMessage(plugin.getPrefix() + ChatColor.RED + "Usage: /delwarp <name>");
+            sender.sendMessage(plugin.getPrefix().append(MiniMessage.miniMessage().deserialize("<red>Usage: /delwarp <name>")));
             return true;
         }
         
         String warpName = args[0];
         
         if (!warpManager.warpExists(warpName)) {
-            sender.sendMessage(plugin.getPrefix() + ChatColor.RED + "Warp '" + warpName + "' does not exist!");
+            sender.sendMessage(plugin.getPrefix().append(MiniMessage.miniMessage().deserialize("<red>Warp '" + warpName + "' does not exist!")));
             return true;
         }
         
         boolean success = warpManager.deleteWarp(warpName);
         
         if (success) {
-            sender.sendMessage(plugin.getPrefix() + ChatColor.GREEN + "Warp '" + warpName + "' has been deleted.");
+            sender.sendMessage(plugin.getPrefix().append(MiniMessage.miniMessage().deserialize("<green>Warp '" + warpName + "' has been deleted.")));
         } else {
-            sender.sendMessage(plugin.getPrefix() + ChatColor.RED + "Failed to delete warp '" + warpName + "'.");
+            sender.sendMessage(plugin.getPrefix().append(MiniMessage.miniMessage().deserialize("<red>Failed to delete warp '" + warpName + "'.")));
         }
         
         return true;

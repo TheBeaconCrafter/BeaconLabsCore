@@ -2,7 +2,8 @@ package org.bcnlab.beaconlabscore.commands.utils;
 
 import org.bcnlab.beaconlabscore.BeaconLabsCore;
 import org.bukkit.Bukkit;
-import org.bukkit.ChatColor;
+import net.kyori.adventure.text.minimessage.MiniMessage;
+import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer;
 import org.bukkit.GameMode;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
@@ -22,7 +23,7 @@ public class EndSpectateCommand implements CommandExecutor {
     public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
         // Check if the command sender is a player
         if (!(sender instanceof Player)) {
-            sender.sendMessage(plugin.getPrefix() + ChatColor.RED + "Only players can use this command!");
+            sender.sendMessage(plugin.getPrefix().append(MiniMessage.miniMessage().deserialize("<red>Only players can use this command!")));
             return true;
         }
 
@@ -30,7 +31,7 @@ public class EndSpectateCommand implements CommandExecutor {
 
         // Check permission
         if (!player.hasPermission("beaconlabs.core.endspectator")) {
-            player.sendMessage(plugin.getPrefix() + ChatColor.RED + "You do not have permission to use this command.");
+            player.sendMessage(plugin.getPrefix().append(MiniMessage.miniMessage().deserialize("<red>You do not have permission to use this command.")));
             return true;
         }
 
@@ -57,7 +58,7 @@ public class EndSpectateCommand implements CommandExecutor {
         }
 
         // Send confirmation message
-        spectator.sendMessage(plugin.getPrefix() + ChatColor.GREEN + "You are no longer spectating.");
+        spectator.sendMessage(plugin.getPrefix().append(MiniMessage.miniMessage().deserialize("<green>You are no longer spectating.")));
 
         // Clear title (if any)
         spectator.resetTitle();

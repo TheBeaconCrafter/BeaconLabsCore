@@ -2,7 +2,8 @@ package org.bcnlab.beaconlabscore.commands.player;
 
 import org.bcnlab.beaconlabscore.BeaconLabsCore;
 import org.bukkit.Bukkit;
-import org.bukkit.ChatColor;
+import net.kyori.adventure.text.minimessage.MiniMessage;
+import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
@@ -19,7 +20,7 @@ public class HealCommand implements CommandExecutor {
     @Override
     public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
         if (!(sender instanceof Player)) {
-            sender.sendMessage(plugin.getPrefix() + ChatColor.RED + "This command can only be used by players.");
+            sender.sendMessage(plugin.getPrefix().append(MiniMessage.miniMessage().deserialize("<red>This command can only be used by players.")));
             return true;
         }
 
@@ -27,13 +28,13 @@ public class HealCommand implements CommandExecutor {
 
         if (args.length > 0) {
             if (!sender.hasPermission("beaconlabs.core.heal.others")) {
-                sender.sendMessage(plugin.getPrefix() + ChatColor.RED + "You do not have permission to heal others.");
+                sender.sendMessage(plugin.getPrefix().append(MiniMessage.miniMessage().deserialize("<red>You do not have permission to heal others.")));
                 return true;
             }
 
             Player target = Bukkit.getPlayer(args[0]);
             if (target == null) {
-                sender.sendMessage(plugin.getPrefix() + ChatColor.RED + "Player not found: " + args[0]);
+                sender.sendMessage(plugin.getPrefix().append(MiniMessage.miniMessage().deserialize("<red>Player not found: " + args[0])));
                 return true;
             }
 
@@ -45,22 +46,22 @@ public class HealCommand implements CommandExecutor {
             healPlayer(target, notify);
 
             if(notify) {
-                sender.sendMessage(plugin.getPrefix() + ChatColor.GREEN + "You healed " + target.getName() + ".");
+                sender.sendMessage(plugin.getPrefix().append(MiniMessage.miniMessage().deserialize("<green>You healed " + target.getName() + ".")));
             } else {
-                sender.sendMessage(plugin.getPrefix() + ChatColor.GREEN + "You healed " + target.getName() + " without notifying them.");
+                sender.sendMessage(plugin.getPrefix().append(MiniMessage.miniMessage().deserialize("<green>You healed " + target.getName() + " without notifying them.")));
             }
 
             if (notify) {
-                target.sendMessage(plugin.getPrefix() + ChatColor.GREEN + "You have been healed by " + player.getName() + ".");
+                target.sendMessage(plugin.getPrefix().append(MiniMessage.miniMessage().deserialize("<green>You have been healed by " + player.getName() + ".")));
             }
         } else {
             if (!sender.hasPermission("beaconlabs.core.heal.self")) {
-                sender.sendMessage(plugin.getPrefix() + ChatColor.RED + "You do not have permission to heal yourself.");
+                sender.sendMessage(plugin.getPrefix().append(MiniMessage.miniMessage().deserialize("<red>You do not have permission to heal yourself.")));
                 return true;
             }
 
             healPlayer(player, true);
-            player.sendMessage(plugin.getPrefix() + ChatColor.GREEN + "You healed yourself.");
+            player.sendMessage(plugin.getPrefix().append(MiniMessage.miniMessage().deserialize("<green>You healed yourself.")));
         }
 
         return true;
@@ -72,7 +73,7 @@ public class HealCommand implements CommandExecutor {
         player.setFireTicks(0);
 
         if (notify) {
-            player.sendMessage(plugin.getPrefix() + ChatColor.GREEN + "You have been healed.");
+            player.sendMessage(plugin.getPrefix().append(MiniMessage.miniMessage().deserialize("<green>You have been healed.")));
         }
     }
 }

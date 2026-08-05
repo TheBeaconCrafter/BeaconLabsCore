@@ -2,7 +2,8 @@ package org.bcnlab.beaconlabscore.commands.player;
 
 import org.bcnlab.beaconlabscore.BeaconLabsCore;
 import org.bukkit.Bukkit;
-import org.bukkit.ChatColor;
+import net.kyori.adventure.text.minimessage.MiniMessage;
+import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
@@ -20,32 +21,32 @@ public class InvseeCommand implements CommandExecutor {
     @Override
     public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
         if (!(sender instanceof Player)) {
-            sender.sendMessage(plugin.getPrefix() + ChatColor.RED + "This command can only be used by players.");
+            sender.sendMessage(plugin.getPrefix().append(MiniMessage.miniMessage().deserialize("<red>This command can only be used by players.")));
             return true;
         }
 
         Player player = (Player) sender;
 
         if (!sender.hasPermission("beaconlabs.core.invsee")) {
-            sender.sendMessage(plugin.getPrefix() + ChatColor.RED + "You do not have permission to use this command.");
+            sender.sendMessage(plugin.getPrefix().append(MiniMessage.miniMessage().deserialize("<red>You do not have permission to use this command.")));
             return true;
         }
 
         if (args.length != 1) {
-            sender.sendMessage(plugin.getPrefix() + ChatColor.RED + "Usage: /invsee <player>");
+            sender.sendMessage(plugin.getPrefix().append(MiniMessage.miniMessage().deserialize("<red>Usage: /invsee <player>")));
             return true;
         }
 
         Player target = Bukkit.getPlayer(args[0]);
         if (target == null) {
-            sender.sendMessage(plugin.getPrefix() + ChatColor.RED + "Player not found: " + args[0]);
+            sender.sendMessage(plugin.getPrefix().append(MiniMessage.miniMessage().deserialize("<red>Player not found: " + args[0])));
             return true;
         }
 
         Inventory targetInventory = target.getInventory();
         player.openInventory(targetInventory);
 
-        sender.sendMessage(plugin.getPrefix() + ChatColor.GREEN + "You are now viewing the inventory of " + target.getName() + ".");
+        sender.sendMessage(plugin.getPrefix().append(MiniMessage.miniMessage().deserialize("<green>You are now viewing the inventory of " + target.getName() + ".")));
         return true;
     }
 }

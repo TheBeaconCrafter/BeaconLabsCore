@@ -1,6 +1,8 @@
 package org.bcnlab.beaconlabscore.commands.utils;
 
 import org.bcnlab.beaconlabscore.BeaconLabsCore;
+import net.kyori.adventure.text.minimessage.MiniMessage;
+import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer;
 import org.bukkit.Bukkit;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
@@ -66,20 +68,20 @@ public class ClearLagCommand implements CommandExecutor {
             }
 
             String message = String.format(
-                    "%s§aEntities removed:\n" +
-                            "§bItems: §e%d\n" +
-                            "§bAnimals: §e%d\n" +
-                            "§bMonsters: §e%d\n" +
-                            "§bDropped Items: §e%d\n" +
-                            "§bExperience Orbs: §e%d\n" +
-                            "§bMinecarts: §e%d",
-                    plugin.getPrefix(), itemsRemoved, animalsRemoved, monstersRemoved,
+                    "<green>Entities removed:\n" +
+                            "<aqua>Items: <yellow>%d\n" +
+                            "<aqua>Animals: <yellow>%d\n" +
+                            "<aqua>Monsters: <yellow>%d\n" +
+                            "<aqua>Dropped Items: <yellow>%d\n" +
+                            "<aqua>Experience Orbs: <yellow>%d\n" +
+                            "<aqua>Minecarts: <yellow>%d",
+                    itemsRemoved, animalsRemoved, monstersRemoved,
                     droppedItemsRemoved, experienceOrbsRemoved, minecartsRemoved
             );
-            sender.sendMessage(message);
+            sender.sendMessage(plugin.getPrefix().append(MiniMessage.miniMessage().deserialize(message)));
             return true; // Command executed successfully
         } else {
-            sender.sendMessage(plugin.getPrefix() + plugin.getNoPermsMessage());
+            sender.sendMessage(plugin.getPrefix().append(LegacyComponentSerializer.legacyAmpersand().deserialize(plugin.getNoPermsMessage())));
             return true; // Command executed, but no permission
         }
     }

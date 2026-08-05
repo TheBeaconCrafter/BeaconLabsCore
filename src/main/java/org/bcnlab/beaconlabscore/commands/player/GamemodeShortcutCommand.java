@@ -2,7 +2,8 @@ package org.bcnlab.beaconlabscore.commands.player;
 
 import org.bcnlab.beaconlabscore.BeaconLabsCore;
 import org.bukkit.Bukkit;
-import org.bukkit.ChatColor;
+import net.kyori.adventure.text.minimessage.MiniMessage;
+import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer;
 import org.bukkit.GameMode;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
@@ -47,13 +48,13 @@ public class GamemodeShortcutCommand implements CommandExecutor {
         if (args.length == 0) {
             // Setting own gamemode
             if (!(sender instanceof Player)) {
-                sender.sendMessage(plugin.getPrefix() + ChatColor.RED + "Console cannot change its own gamemode!");
+                sender.sendMessage(plugin.getPrefix().append(MiniMessage.miniMessage().deserialize("<red>Console cannot change its own gamemode!")));
                 return true;
             }
             
             Player player = (Player) sender;
             if (!player.hasPermission("beaconlabs.core.gamemode.self")) {
-                player.sendMessage(plugin.getPrefix() + ChatColor.translateAlternateColorCodes('&', plugin.getNoPermsMessage()));
+                player.sendMessage(plugin.getPrefix().append(LegacyComponentSerializer.legacyAmpersand().deserialize(plugin.getNoPermsMessage())));
                 return true;
             }
             
@@ -61,7 +62,7 @@ public class GamemodeShortcutCommand implements CommandExecutor {
         } else {
             // Setting another player's gamemode
             if (!sender.hasPermission("beaconlabs.core.gamemode.others")) {
-                sender.sendMessage(plugin.getPrefix() + ChatColor.translateAlternateColorCodes('&', plugin.getNoPermsMessage()));
+                sender.sendMessage(plugin.getPrefix().append(LegacyComponentSerializer.legacyAmpersand().deserialize(plugin.getNoPermsMessage())));
                 return true;
             }
             
@@ -69,7 +70,7 @@ public class GamemodeShortcutCommand implements CommandExecutor {
             Player target = Bukkit.getPlayer(targetName);
             
             if (target == null) {
-                sender.sendMessage(plugin.getPrefix() + ChatColor.RED + "Player '" + targetName + "' not found or is not online.");
+                sender.sendMessage(plugin.getPrefix().append(MiniMessage.miniMessage().deserialize("<red>Player '" + targetName + "' not found or is not online.")));
                 return true;
             }
             
@@ -84,11 +85,11 @@ public class GamemodeShortcutCommand implements CommandExecutor {
         target.setGameMode(gameMode);
         
         if (!silent) {
-            target.sendMessage(plugin.getPrefix() + ChatColor.GREEN + "Your gamemode has been changed to " + ChatColor.GOLD + gameModeName + ChatColor.GREEN + ".");
+            target.sendMessage(plugin.getPrefix().append(MiniMessage.miniMessage().deserialize("<green>Your gamemode has been changed to <gold>" + gameModeName + "<green>.")));
         }
         
         if (sender != target && !silent) {
-            sender.sendMessage(plugin.getPrefix() + ChatColor.GREEN + "Changed " + ChatColor.GOLD + target.getName() + ChatColor.GREEN + "'s gamemode to " + ChatColor.GOLD + gameModeName + ChatColor.GREEN + ".");
+            sender.sendMessage(plugin.getPrefix().append(MiniMessage.miniMessage().deserialize("<green>Changed <gold>" + target.getName() + "<green>'s gamemode to <gold>" + gameModeName + "<green>.")));
         }
     }
 }

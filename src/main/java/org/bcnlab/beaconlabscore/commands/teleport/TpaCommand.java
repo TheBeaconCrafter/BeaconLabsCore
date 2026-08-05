@@ -1,7 +1,9 @@
 package org.bcnlab.beaconlabscore.commands.teleport;
 
 import org.bukkit.Bukkit;
-import org.bukkit.ChatColor;
+import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.minimessage.MiniMessage;
+import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
@@ -12,46 +14,46 @@ import java.util.Map;
 
 public class TpaCommand implements CommandExecutor {
 
-    private final String pluginPrefix;
+    private final Component pluginPrefix;
     public static final Map<String, String> tpaRequests = new HashMap<>();
 
     public TpaCommand(String pluginPrefix) {
-        this.pluginPrefix = ChatColor.translateAlternateColorCodes('&', pluginPrefix);
+        this.pluginPrefix = LegacyComponentSerializer.legacyAmpersand().deserialize(pluginPrefix);
     }
 
     @Override
     public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
         if (!(sender instanceof Player)) {
-            sender.sendMessage(pluginPrefix + ChatColor.RED + "This command can only be used by players.");
+            sender.sendMessage(pluginPrefix.append(MiniMessage.miniMessage().deserialize("<red>This command can only be used by players.")));
             return true;
         }
 
         Player player = (Player) sender;
 
         if (!sender.hasPermission("beaconlabs.core.tpa")) {
-            sender.sendMessage(pluginPrefix + ChatColor.RED + "You do not have permission to use this command.");
+            sender.sendMessage(pluginPrefix.append(MiniMessage.miniMessage().deserialize("<red>You do not have permission to use this command.")));
             return true;
         }
 
         if (args.length != 1) {
-            sender.sendMessage(pluginPrefix + ChatColor.RED + "Usage: /tpa <player>");
+            sender.sendMessage(pluginPrefix.append(MiniMessage.miniMessage().deserialize("<red>Usage: /tpa <player>")));
             return true;
         }
 
         Player target = Bukkit.getPlayer(args[0]);
         if (target == null) {
-            sender.sendMessage(pluginPrefix + ChatColor.RED + "Player not found: " + args[0]);
+            sender.sendMessage(pluginPrefix.append(MiniMessage.miniMessage().deserialize("<red>Player not found: " + args[0])));
             return true;
         }
 
         if (target.getName().equals(player.getName())) {
-            sender.sendMessage(pluginPrefix + ChatColor.RED + "You cannot send a teleport request to yourself.");
+            sender.sendMessage(pluginPrefix.append(MiniMessage.miniMessage().deserialize("<red>You cannot send a teleport request to yourself.")));
             return true;
         }
 
         tpaRequests.put(target.getName(), player.getName());
-        sender.sendMessage(pluginPrefix + ChatColor.GREEN + "Teleport request sent to " + target.getName() + ".");
-        target.sendMessage(pluginPrefix + ChatColor.GOLD + player.getName() + " has requested to teleport to you. Type" + ChatColor.RED +" /tpaccept " + player.getName() + ChatColor.GOLD +" to accept or" + ChatColor.RED + "/tpdeny" + ChatColor.GOLD + " to deny.");
+        sender.sendMessage(pluginPrefix.append(MiniMessage.miniMessage().deserialize("<green>Teleport request sent to " + target.getName() + ".")));
+        target.sendMessage(pluginPrefix.append(MiniMessage.miniMessage().deserialize("<gold>" + player.getName() + " has requested to teleport to you. Type<red> /tpaccept " + player.getName() + "<gold> to accept or<red> /tpdeny<gold> to deny.")));
 
         return true;
     }

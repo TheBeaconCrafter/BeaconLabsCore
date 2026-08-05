@@ -1,7 +1,8 @@
 package org.bcnlab.beaconlabscore.commands.time;
 
 import org.bcnlab.beaconlabscore.BeaconLabsCore;
-import org.bukkit.ChatColor;
+import net.kyori.adventure.text.minimessage.MiniMessage;
+import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer;
 import org.bukkit.World;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
@@ -19,26 +20,26 @@ public class NoonCommand implements CommandExecutor {
     @Override
     public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
         if (!(sender instanceof Player)) {
-            sender.sendMessage(ChatColor.RED + "Only players can use this command.");
+            sender.sendMessage(MiniMessage.miniMessage().deserialize("<red>Only players can use this command."));
             return true;
         }
 
         Player player = (Player) sender;
 
         if (!player.hasPermission("beaconlabs.core.time")) {
-            player.sendMessage(plugin.getPrefix() + ChatColor.RED + "You do not have permission to change the time.");
+            player.sendMessage(plugin.getPrefix().append(MiniMessage.miniMessage().deserialize("<red>You do not have permission to change the time.")));
             return true;
         }
 
         if (args.length > 0) {
-            sender.sendMessage(plugin.getPrefix() + ChatColor.RED + "Usage: /noon");
+            sender.sendMessage(plugin.getPrefix().append(MiniMessage.miniMessage().deserialize("<red>Usage: /noon")));
             return true;
         }
 
         World world = player.getWorld();
 
         world.setTime(6000);
-        player.sendMessage(plugin.getPrefix() + ChatColor.GREEN + "Set time to noon.");
+        player.sendMessage(plugin.getPrefix().append(MiniMessage.miniMessage().deserialize("<green>Set time to noon.")));
 
         return true;
     }

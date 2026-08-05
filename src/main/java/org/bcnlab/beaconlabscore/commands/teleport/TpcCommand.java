@@ -2,7 +2,8 @@ package org.bcnlab.beaconlabscore.commands.teleport;
 
 import org.bcnlab.beaconlabscore.BeaconLabsCore;
 import org.bukkit.Bukkit;
-import org.bukkit.ChatColor;
+import net.kyori.adventure.text.minimessage.MiniMessage;
+import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
@@ -19,7 +20,7 @@ public class TpcCommand implements CommandExecutor {
     @Override
     public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
         if (!(sender instanceof Player)) {
-            sender.sendMessage(plugin.getPrefix() + ChatColor.RED + "Only players can use this command!");
+            sender.sendMessage(plugin.getPrefix().append(MiniMessage.miniMessage().deserialize("<red>Only players can use this command!")));
             return true;
         }
 
@@ -27,12 +28,12 @@ public class TpcCommand implements CommandExecutor {
 
         // Check permission
         if (!player.hasPermission("beaconlabs.core.tp")) {
-            player.sendMessage(plugin.getPrefix() + ChatColor.RED + "You do not have permission to use this command.");
+            player.sendMessage(plugin.getPrefix().append(MiniMessage.miniMessage().deserialize("<red>You do not have permission to use this command.")));
             return true;
         }
 
         if (args.length < 3) {
-            sender.sendMessage(plugin.getPrefix() + ChatColor.RED + "Usage: /tp <player> <x> <y> <z> | /tp <x> <y> <z>");
+            sender.sendMessage(plugin.getPrefix().append(MiniMessage.miniMessage().deserialize("<red>Usage: /tp <player> <x> <y> <z> | /tp <x> <y> <z>")));
             return false;
         }
 
@@ -45,18 +46,18 @@ public class TpcCommand implements CommandExecutor {
                 y = Double.parseDouble(args[2]);
                 z = Double.parseDouble(args[3]);
             } catch (NumberFormatException e) {
-                sender.sendMessage(plugin.getPrefix() + ChatColor.RED + "Coordinates must be numbers.");
+                sender.sendMessage(plugin.getPrefix().append(MiniMessage.miniMessage().deserialize("<red>Coordinates must be numbers.")));
                 return false;
             }
 
             Player targetPlayer = Bukkit.getPlayer(targetPlayerName);
             if (targetPlayer == null) {
-                sender.sendMessage(plugin.getPrefix() + ChatColor.RED + "Player not found.");
+                sender.sendMessage(plugin.getPrefix().append(MiniMessage.miniMessage().deserialize("<red>Player not found.")));
                 return false;
             }
 
             targetPlayer.teleport(new org.bukkit.Location(targetPlayer.getWorld(), x, y, z));
-            sender.sendMessage(plugin.getPrefix() + ChatColor.GOLD + "Teleported " + targetPlayerName + " to (" + x + ", " + y + ", " + z + ").");
+            sender.sendMessage(plugin.getPrefix().append(MiniMessage.miniMessage().deserialize("<gold>Teleported " + targetPlayerName + " to (" + x + ", " + y + ", " + z + ").")));
 
         } else if (args.length == 3) {
             // Teleport the sender to coordinates
@@ -66,15 +67,15 @@ public class TpcCommand implements CommandExecutor {
                 y = Double.parseDouble(args[1]);
                 z = Double.parseDouble(args[2]);
             } catch (NumberFormatException e) {
-                sender.sendMessage(plugin.getPrefix() + ChatColor.RED + "Coordinates must be numbers.");
+                sender.sendMessage(plugin.getPrefix().append(MiniMessage.miniMessage().deserialize("<red>Coordinates must be numbers.")));
                 return false;
             }
 
             player.teleport(new org.bukkit.Location(player.getWorld(), x, y, z));
-            sender.sendMessage(plugin.getPrefix() + ChatColor.GOLD + "Teleported you to (" + x + ", " + y + ", " + z + ").");
+            sender.sendMessage(plugin.getPrefix().append(MiniMessage.miniMessage().deserialize("<gold>Teleported you to (" + x + ", " + y + ", " + z + ").")));
 
         } else {
-            sender.sendMessage(plugin.getPrefix() + ChatColor.RED + "Usage: /tp <player> <x> <y> <z> | /tp <x> <y> <z>");
+            sender.sendMessage(plugin.getPrefix().append(MiniMessage.miniMessage().deserialize("<red>Usage: /tp <player> <x> <y> <z> | /tp <x> <y> <z>")));
             return false;
         }
 

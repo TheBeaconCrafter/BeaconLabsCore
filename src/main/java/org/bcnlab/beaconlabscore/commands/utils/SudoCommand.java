@@ -2,7 +2,8 @@ package org.bcnlab.beaconlabscore.commands.utils;
 
 import org.bcnlab.beaconlabscore.BeaconLabsCore;
 import org.bukkit.Bukkit;
-import org.bukkit.ChatColor;
+import net.kyori.adventure.text.minimessage.MiniMessage;
+import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
@@ -20,7 +21,7 @@ public class SudoCommand implements CommandExecutor {
     public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
         // Check if the command sender is a player
         if (!(sender instanceof Player)) {
-            sender.sendMessage(plugin.getPrefix() + ChatColor.RED + "Only players can use this command!");
+            sender.sendMessage(plugin.getPrefix().append(MiniMessage.miniMessage().deserialize("<red>Only players can use this command!")));
             return true;
         }
 
@@ -28,13 +29,13 @@ public class SudoCommand implements CommandExecutor {
 
         // Check permission
         if (!player.hasPermission("beaconlabs.core.sudo")) {
-            player.sendMessage(plugin.getPrefix() + ChatColor.RED + "You do not have permission to use this command.");
+            player.sendMessage(plugin.getPrefix().append(MiniMessage.miniMessage().deserialize("<red>You do not have permission to use this command.")));
             return true;
         }
 
         // Validate command usage
         if (args.length < 2) {
-            player.sendMessage(plugin.getPrefix() + ChatColor.RED + "Usage: /sudo <player> <command> [args...]");
+            player.sendMessage(plugin.getPrefix().append(MiniMessage.miniMessage().deserialize("<red>Usage: /sudo <player> <command> [args...]")));
             return true;
         }
 
@@ -43,7 +44,7 @@ public class SudoCommand implements CommandExecutor {
 
         // Check if the target player is online
         if (target == null || !target.isOnline()) {
-            player.sendMessage(plugin.getPrefix() + ChatColor.RED + "Player '" + targetName + "' is not online.");
+            player.sendMessage(plugin.getPrefix().append(MiniMessage.miniMessage().deserialize("<red>Player '" + targetName + "' is not online.")));
             return true;
         }
 
@@ -58,9 +59,9 @@ public class SudoCommand implements CommandExecutor {
         boolean commandExecuted = Bukkit.dispatchCommand(target, commandToExecute);
 
         if (commandExecuted) {
-            player.sendMessage(plugin.getPrefix() + ChatColor.GREEN + "Successfully executed command as " + target.getName() + ": /" + commandToExecute);
+            player.sendMessage(plugin.getPrefix().append(MiniMessage.miniMessage().deserialize("<green>Successfully executed command as " + target.getName() + ": /" + commandToExecute)));
         } else {
-            player.sendMessage(plugin.getPrefix() + ChatColor.RED + "Failed to execute command as " + target.getName() + ": /" + commandToExecute);
+            player.sendMessage(plugin.getPrefix().append(MiniMessage.miniMessage().deserialize("<red>Failed to execute command as " + target.getName() + ": /" + commandToExecute)));
         }
 
         return true;

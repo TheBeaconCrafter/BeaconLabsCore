@@ -5,7 +5,9 @@ import net.luckperms.api.model.user.User;
 import net.luckperms.api.query.QueryOptions;
 import org.bcnlab.beaconlabscore.BeaconLabsCore;
 import org.bukkit.Bukkit;
-import org.bukkit.ChatColor;
+import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.minimessage.MiniMessage;
+import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
@@ -25,7 +27,7 @@ public class ChatSudoCommand implements CommandExecutor {
     public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
         // Check if the command sender is a player
         if (!(sender instanceof Player)) {
-            sender.sendMessage(plugin.getPrefix() + ChatColor.RED + "Only players can use this command!");
+            sender.sendMessage(plugin.getPrefix().append(MiniMessage.miniMessage().deserialize("<red>Only players can use this command!")));
             return true;
         }
 
@@ -33,13 +35,13 @@ public class ChatSudoCommand implements CommandExecutor {
 
         // Check permission
         if (!player.hasPermission("beaconlab.core.csudo")) {
-            player.sendMessage(plugin.getPrefix() + ChatColor.RED + "You do not have permission to use this command.");
+            player.sendMessage(plugin.getPrefix().append(MiniMessage.miniMessage().deserialize("<red>You do not have permission to use this command.")));
             return true;
         }
 
         // Validate command usage
         if (args.length < 2) {
-            player.sendMessage(plugin.getPrefix() + ChatColor.RED + "Usage: /csudo <player> <message>");
+            player.sendMessage(plugin.getPrefix().append(MiniMessage.miniMessage().deserialize("<red>Usage: /csudo <player> <message>")));
             return true;
         }
 
@@ -48,7 +50,7 @@ public class ChatSudoCommand implements CommandExecutor {
 
         // Check if the target player is online
         if (target == null || !target.isOnline()) {
-            player.sendMessage(plugin.getPrefix() + ChatColor.RED + "Player '" + targetName + "' is not online.");
+            player.sendMessage(plugin.getPrefix().append(MiniMessage.miniMessage().deserialize("<red>Player '" + targetName + "' is not online.")));
             return true;
         }
 
@@ -68,13 +70,13 @@ public class ChatSudoCommand implements CommandExecutor {
         String message = messageBuilder.toString().trim();
 
         // Format the fake message with sender's name
-        String formattedMessage = ChatColor.translateAlternateColorCodes('&', prefix + target.getName() + suffix + ChatColor.WHITE + ": " + message);
+        Component formattedMessage = LegacyComponentSerializer.legacyAmpersand().deserialize(prefix + target.getName() + suffix + "&f: " + message);
 
         // Broadcast the message to the entire server
-        Bukkit.broadcastMessage(formattedMessage);
+        Bukkit.broadcast(formattedMessage);
 
         // Notify the sender
-        player.sendMessage(plugin.getPrefix() + ChatColor.GREEN + "Message sent as " + target.getName() + ": " + message);
+        player.sendMessage(plugin.getPrefix().append(MiniMessage.miniMessage().deserialize("<green>Message sent as " + target.getName() + ": " + message)));
 
         return true;
     }

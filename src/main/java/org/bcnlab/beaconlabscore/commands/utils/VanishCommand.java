@@ -1,6 +1,7 @@
 package org.bcnlab.beaconlabscore.commands.utils;
 
-import net.md_5.bungee.api.ChatColor;
+import net.kyori.adventure.text.minimessage.MiniMessage;
+import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer;
 import org.bcnlab.beaconlabscore.BeaconLabsCore;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
@@ -24,23 +25,23 @@ public class VanishCommand implements CommandExecutor {
     @Override
     public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
         if (!(sender instanceof Player)) {
-            sender.sendMessage(plugin.getPrefix() + ChatColor.RED + "This command can only be used by players.");
+            sender.sendMessage(plugin.getPrefix().append(MiniMessage.miniMessage().deserialize("<red>This command can only be used by players.")));
             return true;
         }
 
         Player player = (Player) sender;
 
         if (!player.hasPermission("beaconlabs.core.vanish.self")) {
-            player.sendMessage(plugin.getPrefix() + ChatColor.RED + "You do not have permission to use this command.");
+            player.sendMessage(plugin.getPrefix().append(MiniMessage.miniMessage().deserialize("<red>You do not have permission to use this command.")));
             return true;
         }
 
         if (vanishedPlayers.contains(player)) {
             unVanish(player);
-            player.sendMessage(plugin.getPrefix() + ChatColor.GREEN + "You are no longer vanished.");
+            player.sendMessage(plugin.getPrefix().append(MiniMessage.miniMessage().deserialize("<green>You are no longer vanished.")));
         } else {
             vanish(player);
-            player.sendMessage(plugin.getPrefix() + ChatColor.GREEN + "You are now vanished.");
+            player.sendMessage(plugin.getPrefix().append(MiniMessage.miniMessage().deserialize("<green>You are now vanished.")));
         }
 
         return true;

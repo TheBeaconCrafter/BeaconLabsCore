@@ -1,0 +1,12 @@
+name: BeaconLabsCore
+version: '${project.version}'
+main: org.bcnlab.beaconlabscore.BeaconLabsCore
+author: ItsBeacon
+api-version: '1.21'
+
+dependencies:
+  server:
+    LuckPerms:
+      load: BEFORE
+      required: true
+      join-classpath: true
