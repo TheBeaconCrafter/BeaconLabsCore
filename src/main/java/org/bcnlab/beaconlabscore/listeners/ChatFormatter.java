@@ -47,6 +47,13 @@ public class ChatFormatter {
                             prefix = group.getCachedData().getMetaData(QueryOptions.defaultContextualOptions()).getPrefix();
                             suffix = group.getCachedData().getMetaData(QueryOptions.defaultContextualOptions()).getSuffix();
                         }
+                    } else {
+                        try {
+                            String originalName = (String) vs.getClass().getMethod("getOriginalName", Player.class).invoke(vs, player);
+                            if (originalName != null) {
+                                displayName = originalName;
+                            }
+                        } catch (Exception e) {}
                     }
                 }
             } catch (Exception e) {
