@@ -22,37 +22,37 @@ public class TpAcceptCommand implements CommandExecutor {
     @Override
     public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
         if (!(sender instanceof Player)) {
-            sender.sendMessage(pluginPrefix.append(MiniMessage.miniMessage().deserialize("<red>This command can only be used by players.")));
+            sender.sendMessage(pluginPrefix.append(MiniMessage.miniMessage().deserialize("<gray>This command can only be used by players.")));
             return true;
         }
 
         Player target = (Player) sender;
 
         if (!sender.hasPermission("beaconlabs.core.tpaccept")) {
-            sender.sendMessage(pluginPrefix.append(MiniMessage.miniMessage().deserialize("<red>You do not have permission to use this command.")));
+            sender.sendMessage(pluginPrefix.append(MiniMessage.miniMessage().deserialize("<gray>You do not have permission to use this command.")));
             return true;
         }
 
         if (args.length != 1) {
-            sender.sendMessage(pluginPrefix.append(MiniMessage.miniMessage().deserialize("<red>Usage: /tpaccept <player>")));
+            sender.sendMessage(pluginPrefix.append(MiniMessage.miniMessage().deserialize("<gray>Usage: /tpaccept <player>")));
             return true;
         }
 
         String requestingPlayerName = args[0];
         if (!tpaRequests.containsKey(target.getName()) || !tpaRequests.get(target.getName()).equals(requestingPlayerName)) {
-            sender.sendMessage(pluginPrefix.append(MiniMessage.miniMessage().deserialize("<red>No pending teleport request from " + requestingPlayerName + ".")));
+            sender.sendMessage(pluginPrefix.append(MiniMessage.miniMessage().deserialize("<gray>No pending teleport request from " + requestingPlayerName + ".")));
             return true;
         }
 
         Player requester = Bukkit.getPlayer(requestingPlayerName);
         if (requester == null) {
-            sender.sendMessage(pluginPrefix.append(MiniMessage.miniMessage().deserialize("<red>Player " + requestingPlayerName + " is not online.")));
+            sender.sendMessage(pluginPrefix.append(MiniMessage.miniMessage().deserialize("<gray>Player " + requestingPlayerName + " is not online.")));
             return true;
         }
 
         requester.teleport(target);
-        requester.sendMessage(pluginPrefix.append(MiniMessage.miniMessage().deserialize("<green>Teleport request accepted. Teleporting to " + target.getName() + ".")));
-        target.sendMessage(pluginPrefix.append(MiniMessage.miniMessage().deserialize("<green>You have accepted the teleport request from " + requester.getName() + ".")));
+        requester.sendMessage(pluginPrefix.append(MiniMessage.miniMessage().deserialize("<gray>Teleport request accepted. Teleporting to " + target.getName() + ".")));
+        target.sendMessage(pluginPrefix.append(MiniMessage.miniMessage().deserialize("<gray>You have accepted the teleport request from " + requester.getName() + ".")));
 
         tpaRequests.remove(target.getName());
         return true;

@@ -27,7 +27,7 @@ public class ChatSudoCommand implements CommandExecutor {
     public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
         // Check if the command sender is a player
         if (!(sender instanceof Player)) {
-            sender.sendMessage(plugin.getPrefix().append(MiniMessage.miniMessage().deserialize("<red>Only players can use this command!")));
+            sender.sendMessage(plugin.getPrefix(sender).append(MiniMessage.miniMessage().deserialize("<gray>Only players can use this command!")));
             return true;
         }
 
@@ -35,13 +35,13 @@ public class ChatSudoCommand implements CommandExecutor {
 
         // Check permission
         if (!player.hasPermission("beaconlab.core.csudo")) {
-            player.sendMessage(plugin.getPrefix().append(MiniMessage.miniMessage().deserialize("<red>You do not have permission to use this command.")));
+            player.sendMessage(plugin.getPrefix(player).append(MiniMessage.miniMessage().deserialize("<gray>You do not have permission to use this command.")));
             return true;
         }
 
         // Validate command usage
         if (args.length < 2) {
-            player.sendMessage(plugin.getPrefix().append(MiniMessage.miniMessage().deserialize("<red>Usage: /csudo <player> <message>")));
+            player.sendMessage(plugin.getPrefix(player).append(MiniMessage.miniMessage().deserialize("<gray>Usage: /csudo <player> <message>")));
             return true;
         }
 
@@ -50,7 +50,7 @@ public class ChatSudoCommand implements CommandExecutor {
 
         // Check if the target player is online
         if (target == null || !target.isOnline()) {
-            player.sendMessage(plugin.getPrefix().append(MiniMessage.miniMessage().deserialize("<red>Player '" + targetName + "' is not online.")));
+            player.sendMessage(plugin.getPrefix(player).append(MiniMessage.miniMessage().deserialize("<gray>Player '" + targetName + "' is not online.")));
             return true;
         }
 
@@ -76,7 +76,7 @@ public class ChatSudoCommand implements CommandExecutor {
         Bukkit.broadcast(formattedMessage);
 
         // Notify the sender
-        player.sendMessage(plugin.getPrefix().append(MiniMessage.miniMessage().deserialize("<green>Message sent as " + target.getName() + ": " + message)));
+        player.sendMessage(plugin.getPrefix(player).append(MiniMessage.miniMessage().deserialize("<gray>Message sent as " + target.getName() + ": " + message)));
 
         return true;
     }

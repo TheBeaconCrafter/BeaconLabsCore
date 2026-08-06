@@ -36,13 +36,13 @@ public class EnchantCommand implements CommandExecutor, TabCompleter {
     @Override
     public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
         if (!sender.hasPermission("beaconlabs.core.enchant")) {
-            sender.sendMessage(plugin.getPrefix().append(LegacyComponentSerializer.legacyAmpersand().deserialize(plugin.getNoPermsMessage())));
+            sender.sendMessage(plugin.getPrefix(sender).append(LegacyComponentSerializer.legacyAmpersand().deserialize(plugin.getNoPermsMessage())));
             return true;
         }
 
         // Check if args length is correct
         if (args.length < 2) {
-            sender.sendMessage(plugin.getPrefix().append(MiniMessage.miniMessage().deserialize("<red>Usage: /ench [player] <enchantment> <level>")));
+            sender.sendMessage(plugin.getPrefix(sender).append(MiniMessage.miniMessage().deserialize("<gray>Usage: /ench [player] <enchantment> <level>")));
             return true;
         }
 
@@ -58,7 +58,7 @@ public class EnchantCommand implements CommandExecutor, TabCompleter {
             try {
                 level = Integer.parseInt(args[2]);
             } catch (NumberFormatException e) {
-                sender.sendMessage(plugin.getPrefix().append(MiniMessage.miniMessage().deserialize("<red>Level must be a number between 1 and 255.")));
+                sender.sendMessage(plugin.getPrefix(sender).append(MiniMessage.miniMessage().deserialize("<gray>Level must be a number between 1 and 255.")));
                 return true;
             }
         } else if (sender instanceof Player) {
@@ -68,31 +68,31 @@ public class EnchantCommand implements CommandExecutor, TabCompleter {
             try {
                 level = Integer.parseInt(args[1]);
             } catch (NumberFormatException e) {
-                sender.sendMessage(plugin.getPrefix().append(MiniMessage.miniMessage().deserialize("<red>Level must be a number between 1 and 255.")));
+                sender.sendMessage(plugin.getPrefix(sender).append(MiniMessage.miniMessage().deserialize("<gray>Level must be a number between 1 and 255.")));
                 return true;
             }
         } else {
-            sender.sendMessage(plugin.getPrefix().append(MiniMessage.miniMessage().deserialize("<red>Console must specify a player: /ench <player> <enchantment> <level>")));
+            sender.sendMessage(plugin.getPrefix(sender).append(MiniMessage.miniMessage().deserialize("<gray>Console must specify a player: /ench <player> <enchantment> <level>")));
             return true;
         }
 
         // Validate level
         if (level < 1 || level > 255) {
-            sender.sendMessage(plugin.getPrefix().append(MiniMessage.miniMessage().deserialize("<red>Level must be between 1 and 255.")));
+            sender.sendMessage(plugin.getPrefix(sender).append(MiniMessage.miniMessage().deserialize("<gray>Level must be between 1 and 255.")));
             return true;
         }
 
         // Get the enchantment
         Enchantment enchantment = getEnchantmentByName(enchantmentName);
         if (enchantment == null) {
-            sender.sendMessage(plugin.getPrefix().append(MiniMessage.miniMessage().deserialize("<red>Unknown enchantment: " + enchantmentName)));
+            sender.sendMessage(plugin.getPrefix(sender).append(MiniMessage.miniMessage().deserialize("<gray>Unknown enchantment: " + enchantmentName)));
             return true;
         }
 
         // Get the item in hand
         ItemStack item = target.getInventory().getItemInMainHand();
         if (item == null || item.getType() == Material.AIR) {
-            sender.sendMessage(plugin.getPrefix().append(MiniMessage.miniMessage().deserialize("<red>The player must be holding an item.")));
+            sender.sendMessage(plugin.getPrefix(sender).append(MiniMessage.miniMessage().deserialize("<gray>The player must be holding an item.")));
             return true;
         }
 
@@ -104,7 +104,7 @@ public class EnchantCommand implements CommandExecutor, TabCompleter {
         } else {
             // Check if the enchantment can be applied to the item
             if (!enchantment.canEnchantItem(item) && !sender.hasPermission("beaconlabs.core.enchant.bypass")) {
-                sender.sendMessage(plugin.getPrefix().append(MiniMessage.miniMessage().deserialize("<red>This enchantment cannot be applied to this item.")));
+                sender.sendMessage(plugin.getPrefix(sender).append(MiniMessage.miniMessage().deserialize("<gray>This enchantment cannot be applied to this item.")));
                 return true;
             }
 
@@ -114,12 +114,12 @@ public class EnchantCommand implements CommandExecutor, TabCompleter {
 
         // Send success messages
         if (sender != target) {
-            sender.sendMessage(plugin.getPrefix().append(MiniMessage.miniMessage().deserialize("<green>Applied " + 
+            sender.sendMessage(plugin.getPrefix(sender).append(MiniMessage.miniMessage().deserialize("<gray>Applied " + 
                 formatEnchantmentName(enchantment.getKey().getKey()) + " " + level + " to " + target.getName() + "'s " + formatItemName(item.getType().name()) + ".")));
-            target.sendMessage(plugin.getPrefix().append(MiniMessage.miniMessage().deserialize("<green>Your " + formatItemName(item.getType().name()) + 
+            target.sendMessage(plugin.getPrefix(target).append(MiniMessage.miniMessage().deserialize("<gray>Your " + formatItemName(item.getType().name()) + 
                 " was enchanted with " + formatEnchantmentName(enchantment.getKey().getKey()) + " " + level + ".")));
         } else {
-            sender.sendMessage(plugin.getPrefix().append(MiniMessage.miniMessage().deserialize("<green>Applied " + 
+            sender.sendMessage(plugin.getPrefix(sender).append(MiniMessage.miniMessage().deserialize("<gray>Applied " + 
                 formatEnchantmentName(enchantment.getKey().getKey()) + " " + level + " to your " + formatItemName(item.getType().name()) + ".")));
         }
 

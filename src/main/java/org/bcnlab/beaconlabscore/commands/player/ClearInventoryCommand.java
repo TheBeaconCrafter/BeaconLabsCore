@@ -23,12 +23,12 @@ public class ClearInventoryCommand implements CommandExecutor {
                 Player player = (Player) sender;
                 if (sender.hasPermission("beaconlabs.core.clearinventory.self")) {
                     clearInventory(player);
-                    player.sendMessage(plugin.getPrefix().append(MiniMessage.miniMessage().deserialize("<red>Your inventory has been cleared.")));
+                    player.sendMessage(plugin.getPrefix(player).append(MiniMessage.miniMessage().deserialize("<gray>Your inventory has been cleared.")));
                 } else {
-                    player.sendMessage(plugin.getPrefix().append(MiniMessage.miniMessage().deserialize("<red>You are not allowed to clear your inventory.")));
+                    player.sendMessage(plugin.getPrefix(player).append(MiniMessage.miniMessage().deserialize("<gray>You are not allowed to clear your inventory.")));
                 }
             } else {
-                sender.sendMessage(plugin.getPrefix().append(MiniMessage.miniMessage().deserialize("<red>Only players can clear their own inventory.")));
+                sender.sendMessage(plugin.getPrefix(sender).append(MiniMessage.miniMessage().deserialize("<gray>Only players can clear their own inventory.")));
             }
             return true;
         } else if (args.length == 1) {
@@ -36,17 +36,17 @@ public class ClearInventoryCommand implements CommandExecutor {
                 Player target = Bukkit.getPlayer(args[0]);
                 if (target != null) {
                     clearInventory(target);
-                    sender.sendMessage(plugin.getPrefix().append(MiniMessage.miniMessage().deserialize("<red>Cleared the inventory of " + target.getName() + ".")));
-                    target.sendMessage(plugin.getPrefix().append(MiniMessage.miniMessage().deserialize("<red>Your inventory has been cleared by an admin.")));
+                    sender.sendMessage(plugin.getPrefix(sender).append(MiniMessage.miniMessage().deserialize("<gray>Cleared the inventory of " + target.getName() + ".")));
+                    target.sendMessage(plugin.getPrefix(target).append(MiniMessage.miniMessage().deserialize("<gray>Your inventory has been cleared by an admin.")));
                 } else {
-                    sender.sendMessage(plugin.getPrefix().append(MiniMessage.miniMessage().deserialize("<red>Player not found.")));
+                    sender.sendMessage(plugin.getPrefix(sender).append(MiniMessage.miniMessage().deserialize("<gray>Player not found.")));
                 }
             } else {
-                sender.sendMessage(plugin.getPrefix().append(MiniMessage.miniMessage().deserialize("<red>You do not have permission to clear other players' inventories.")));
+                sender.sendMessage(plugin.getPrefix(sender).append(MiniMessage.miniMessage().deserialize("<gray>You do not have permission to clear other players' inventories.")));
             }
             return true;
         } else {
-            sender.sendMessage(plugin.getPrefix().append(MiniMessage.miniMessage().deserialize("<red>Usage: /clearinv [player]")));
+            sender.sendMessage(plugin.getPrefix(sender).append(MiniMessage.miniMessage().deserialize("<gray>Usage: /clearinv [player]")));
             return false;
         }
     }

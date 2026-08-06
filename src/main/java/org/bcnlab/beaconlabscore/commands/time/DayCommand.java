@@ -20,26 +20,26 @@ public class DayCommand implements CommandExecutor {
     @Override
     public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
         if (!(sender instanceof Player)) {
-            sender.sendMessage(MiniMessage.miniMessage().deserialize("<red>Only players can use this command."));
+            sender.sendMessage(MiniMessage.miniMessage().deserialize("<gray>Only players can use this command."));
             return true;
         }
 
         Player player = (Player) sender;
 
         if (!player.hasPermission("beaconlabs.core.time")) {
-            player.sendMessage(plugin.getPrefix().append(MiniMessage.miniMessage().deserialize("<red>You do not have permission to change the time.")));
+            player.sendMessage(plugin.getPrefix(player).append(MiniMessage.miniMessage().deserialize("<gray>You do not have permission to change the time.")));
             return true;
         }
 
         if (args.length > 0) {
-            sender.sendMessage(plugin.getPrefix().append(MiniMessage.miniMessage().deserialize("<red>Usage: /day")));
+            sender.sendMessage(plugin.getPrefix(sender).append(MiniMessage.miniMessage().deserialize("<gray>Usage: /day")));
             return true;
         }
 
         World world = player.getWorld();
 
         world.setTime(0);
-        player.sendMessage(plugin.getPrefix().append(MiniMessage.miniMessage().deserialize("<green>Set time to day.")));
+        player.sendMessage(plugin.getPrefix(player).append(MiniMessage.miniMessage().deserialize("<gray>Set time to day.")));
 
         return true;
     }

@@ -21,7 +21,7 @@ public class SudoCommand implements CommandExecutor {
     public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
         // Check if the command sender is a player
         if (!(sender instanceof Player)) {
-            sender.sendMessage(plugin.getPrefix().append(MiniMessage.miniMessage().deserialize("<red>Only players can use this command!")));
+            sender.sendMessage(plugin.getPrefix(sender).append(MiniMessage.miniMessage().deserialize("<gray>Only players can use this command!")));
             return true;
         }
 
@@ -29,13 +29,13 @@ public class SudoCommand implements CommandExecutor {
 
         // Check permission
         if (!player.hasPermission("beaconlabs.core.sudo")) {
-            player.sendMessage(plugin.getPrefix().append(MiniMessage.miniMessage().deserialize("<red>You do not have permission to use this command.")));
+            player.sendMessage(plugin.getPrefix(player).append(MiniMessage.miniMessage().deserialize("<gray>You do not have permission to use this command.")));
             return true;
         }
 
         // Validate command usage
         if (args.length < 2) {
-            player.sendMessage(plugin.getPrefix().append(MiniMessage.miniMessage().deserialize("<red>Usage: /sudo <player> <command> [args...]")));
+            player.sendMessage(plugin.getPrefix(player).append(MiniMessage.miniMessage().deserialize("<gray>Usage: /sudo <player> <command> [args...]")));
             return true;
         }
 
@@ -44,7 +44,7 @@ public class SudoCommand implements CommandExecutor {
 
         // Check if the target player is online
         if (target == null || !target.isOnline()) {
-            player.sendMessage(plugin.getPrefix().append(MiniMessage.miniMessage().deserialize("<red>Player '" + targetName + "' is not online.")));
+            player.sendMessage(plugin.getPrefix(player).append(MiniMessage.miniMessage().deserialize("<gray>Player '" + targetName + "' is not online.")));
             return true;
         }
 
@@ -59,9 +59,9 @@ public class SudoCommand implements CommandExecutor {
         boolean commandExecuted = Bukkit.dispatchCommand(target, commandToExecute);
 
         if (commandExecuted) {
-            player.sendMessage(plugin.getPrefix().append(MiniMessage.miniMessage().deserialize("<green>Successfully executed command as " + target.getName() + ": /" + commandToExecute)));
+            player.sendMessage(plugin.getPrefix(player).append(MiniMessage.miniMessage().deserialize("<gray>Successfully executed command as " + target.getName() + ": /" + commandToExecute)));
         } else {
-            player.sendMessage(plugin.getPrefix().append(MiniMessage.miniMessage().deserialize("<red>Failed to execute command as " + target.getName() + ": /" + commandToExecute)));
+            player.sendMessage(plugin.getPrefix(player).append(MiniMessage.miniMessage().deserialize("<gray>Failed to execute command as " + target.getName() + ": /" + commandToExecute)));
         }
 
         return true;

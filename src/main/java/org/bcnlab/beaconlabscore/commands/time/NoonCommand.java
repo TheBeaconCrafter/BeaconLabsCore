@@ -20,26 +20,26 @@ public class NoonCommand implements CommandExecutor {
     @Override
     public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
         if (!(sender instanceof Player)) {
-            sender.sendMessage(MiniMessage.miniMessage().deserialize("<red>Only players can use this command."));
+            sender.sendMessage(MiniMessage.miniMessage().deserialize("<gray>Only players can use this command."));
             return true;
         }
 
         Player player = (Player) sender;
 
         if (!player.hasPermission("beaconlabs.core.time")) {
-            player.sendMessage(plugin.getPrefix().append(MiniMessage.miniMessage().deserialize("<red>You do not have permission to change the time.")));
+            player.sendMessage(plugin.getPrefix(player).append(MiniMessage.miniMessage().deserialize("<gray>You do not have permission to change the time.")));
             return true;
         }
 
         if (args.length > 0) {
-            sender.sendMessage(plugin.getPrefix().append(MiniMessage.miniMessage().deserialize("<red>Usage: /noon")));
+            sender.sendMessage(plugin.getPrefix(sender).append(MiniMessage.miniMessage().deserialize("<gray>Usage: /noon")));
             return true;
         }
 
         World world = player.getWorld();
 
         world.setTime(6000);
-        player.sendMessage(plugin.getPrefix().append(MiniMessage.miniMessage().deserialize("<green>Set time to noon.")));
+        player.sendMessage(plugin.getPrefix(player).append(MiniMessage.miniMessage().deserialize("<gray>Set time to noon.")));
 
         return true;
     }

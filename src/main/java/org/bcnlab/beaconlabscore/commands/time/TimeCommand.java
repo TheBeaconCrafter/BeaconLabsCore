@@ -20,19 +20,19 @@ public class TimeCommand implements CommandExecutor {
     @Override
     public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
         if (!(sender instanceof Player)) {
-            sender.sendMessage(MiniMessage.miniMessage().deserialize("<red>Only players can use this command."));
+            sender.sendMessage(MiniMessage.miniMessage().deserialize("<gray>Only players can use this command."));
             return true;
         }
 
         Player player = (Player) sender;
 
         if (!player.hasPermission("beaconlabs.core.time")) {
-            player.sendMessage(plugin.getPrefix().append(MiniMessage.miniMessage().deserialize("<red>You do not have permission to change the time.")));
+            player.sendMessage(plugin.getPrefix(player).append(MiniMessage.miniMessage().deserialize("<gray>You do not have permission to change the time.")));
             return true;
         }
 
         if (args.length == 0) {
-            sender.sendMessage(plugin.getPrefix().append(MiniMessage.miniMessage().deserialize("<red>Usage: /time <day|night|noon|midnight|number>")));
+            sender.sendMessage(plugin.getPrefix(sender).append(MiniMessage.miniMessage().deserialize("<gray>Usage: /time <day|night|noon|midnight|number>")));
             return true;
         }
 
@@ -42,27 +42,27 @@ public class TimeCommand implements CommandExecutor {
         switch (timeArg) {
             case "day":
                 world.setTime(0);
-                player.sendMessage(plugin.getPrefix().append(MiniMessage.miniMessage().deserialize("<green>Set time to day.")));
+                player.sendMessage(plugin.getPrefix(player).append(MiniMessage.miniMessage().deserialize("<gray>Set time to day.")));
                 break;
             case "night":
                 world.setTime(13000);
-                player.sendMessage(plugin.getPrefix().append(MiniMessage.miniMessage().deserialize("<green>Set time to night.")));
+                player.sendMessage(plugin.getPrefix(player).append(MiniMessage.miniMessage().deserialize("<gray>Set time to night.")));
                 break;
             case "noon":
                 world.setTime(6000);
-                player.sendMessage(plugin.getPrefix().append(MiniMessage.miniMessage().deserialize("<green>Set time to noon.")));
+                player.sendMessage(plugin.getPrefix(player).append(MiniMessage.miniMessage().deserialize("<gray>Set time to noon.")));
                 break;
             case "midnight":
                 world.setTime(18000);
-                player.sendMessage(plugin.getPrefix().append(MiniMessage.miniMessage().deserialize("<green>Set time to midnight.")));
+                player.sendMessage(plugin.getPrefix(player).append(MiniMessage.miniMessage().deserialize("<gray>Set time to midnight.")));
                 break;
             default:
                 try {
                     long timeValue = Long.parseLong(timeArg);
                     world.setTime(timeValue);
-                    player.sendMessage(plugin.getPrefix().append(MiniMessage.miniMessage().deserialize("<green>Set time to " + timeValue + ".")));
+                    player.sendMessage(plugin.getPrefix(player).append(MiniMessage.miniMessage().deserialize("<gray>Set time to " + timeValue + ".")));
                 } catch (NumberFormatException e) {
-                    player.sendMessage(plugin.getPrefix().append(MiniMessage.miniMessage().deserialize("<red>Invalid time value or keyword. Use: day, night, noon, midnight, or a number.")));
+                    player.sendMessage(plugin.getPrefix(player).append(MiniMessage.miniMessage().deserialize("<gray>Invalid time value or keyword. Use: day, night, noon, midnight, or a number.")));
                 }
                 break;
         }

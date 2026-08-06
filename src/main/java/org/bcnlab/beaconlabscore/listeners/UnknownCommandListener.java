@@ -26,8 +26,8 @@ public class UnknownCommandListener implements Listener {
         if (Bukkit.getServer().getHelpMap().getHelpTopic(args[0]) == null) {
             e.setCancelled(true);
 
-            p.sendMessage(plugin.getPrefix().append(MiniMessage.miniMessage().deserialize(
-                    "<red>The command <dark_gray>[<green>" + msg + "<dark_gray>]<red> doesn't exist!")));
+            p.sendMessage(plugin.getPrefix(p).append(MiniMessage.miniMessage().deserialize(
+                    "<gray>The command <dark_gray>[<gold>" + msg + "<dark_gray>]<gray> doesn't exist!")));
         }
     }
 

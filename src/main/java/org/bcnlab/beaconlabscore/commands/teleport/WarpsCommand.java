@@ -26,18 +26,18 @@ public class WarpsCommand implements CommandExecutor, TabCompleter {
     @Override
     public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
         if (!sender.hasPermission("beaconlabs.core.warps")) {
-            sender.sendMessage(plugin.getPrefix().append(LegacyComponentSerializer.legacyAmpersand().deserialize(plugin.getNoPermsMessage())));
+            sender.sendMessage(plugin.getPrefix(sender).append(LegacyComponentSerializer.legacyAmpersand().deserialize(plugin.getNoPermsMessage())));
             return true;
         }
         
         Set<String> warpNames = warpManager.getWarpNames();
         
         if (warpNames.isEmpty()) {
-            sender.sendMessage(plugin.getPrefix().append(MiniMessage.miniMessage().deserialize("<yellow>There are no warps set on this server.")));
+            sender.sendMessage(plugin.getPrefix(sender).append(MiniMessage.miniMessage().deserialize("<gray>There are no warps set on this server.")));
             return true;
         }
         
-        sender.sendMessage(plugin.getPrefix().append(MiniMessage.miniMessage().deserialize("<green>Available warps:")));
+        sender.sendMessage(plugin.getPrefix(sender).append(MiniMessage.miniMessage().deserialize("<gray>Available warps:")));
         
         StringBuilder warpList = new StringBuilder();
         int count = 0;
@@ -46,7 +46,7 @@ public class WarpsCommand implements CommandExecutor, TabCompleter {
             if (count > 0) {
                 warpList.append("<gray>, ");
             }
-            warpList.append("<aqua>").append(warp);
+            warpList.append("<gray>").append(warp);
             count++;
         }
         

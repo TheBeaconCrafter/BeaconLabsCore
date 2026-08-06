@@ -59,8 +59,16 @@
           <url>https://oss.sonatype.org/content/groups/public/</url>
       </repository>
       <repository>
+          <id>viaversion-repo</id>
+          <url>https://repo.viaversion.com</url>
+      </repository>
+      <repository>
           <id>papermc</id>
           <url>https://repo.papermc.io/repository/maven-public/</url>
+      </repository>
+      <repository>
+          <id>viaversion</id>
+          <url>https://repo.viaversion.com/</url>
       </repository>
   </repositories>
 
@@ -77,5 +85,11 @@
           <version>5.4</version>
           <scope>provided</scope>
       </dependency>
-  </dependencies>
+          <dependency>
+            <groupId>com.viaversion</groupId>
+            <artifactId>viaversion-api</artifactId>
+            <version>5.10.0</version>
+            <scope>provided</scope>
+        </dependency>
+</dependencies>
 </project>

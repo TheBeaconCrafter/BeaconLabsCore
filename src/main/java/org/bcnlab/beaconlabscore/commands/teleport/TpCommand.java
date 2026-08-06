@@ -21,7 +21,7 @@ public class TpCommand implements CommandExecutor {
     public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
         // Check if the command sender is a player
         if (!(sender instanceof Player)) {
-            sender.sendMessage(plugin.getPrefix().append(MiniMessage.miniMessage().deserialize("<red>Only players can use this command!")));
+            sender.sendMessage(plugin.getPrefix(sender).append(MiniMessage.miniMessage().deserialize("<gray>Only players can use this command!")));
             return true;
         }
 
@@ -29,13 +29,13 @@ public class TpCommand implements CommandExecutor {
 
         // Check permission
         if (!player.hasPermission("beaconlabs.core.tp")) {
-            player.sendMessage(plugin.getPrefix().append(MiniMessage.miniMessage().deserialize("<red>You do not have permission to use this command.")));
+            player.sendMessage(plugin.getPrefix(player).append(MiniMessage.miniMessage().deserialize("<gray>You do not have permission to use this command.")));
             return true;
         }
 
         // Validate command usage
         if (args.length < 1 || args.length > 2) {
-            player.sendMessage(plugin.getPrefix().append(MiniMessage.miniMessage().deserialize("<red>Usage: /tp <target> [destination]")));
+            player.sendMessage(plugin.getPrefix(player).append(MiniMessage.miniMessage().deserialize("<gray>Usage: /tp <target> [destination]")));
             return true;
         }
 
@@ -44,27 +44,27 @@ public class TpCommand implements CommandExecutor {
 
         // Check if the target player is online
         if (target == null || !target.isOnline()) {
-            player.sendMessage(plugin.getPrefix().append(MiniMessage.miniMessage().deserialize("<red>Player '" + targetName + "' is not online.")));
+            player.sendMessage(plugin.getPrefix(player).append(MiniMessage.miniMessage().deserialize("<gray>Player '" + targetName + "' is not online.")));
             return true;
         }
 
         // If only one argument is provided, teleport sender to target
         if (args.length == 1) {
             player.teleport(target.getLocation());
-            player.sendMessage(plugin.getPrefix().append(MiniMessage.miniMessage().deserialize("<green>Teleported to " + target.getName() + ".")));
+            player.sendMessage(plugin.getPrefix(player).append(MiniMessage.miniMessage().deserialize("<gray>Teleported to " + target.getName() + ".")));
         } else if (args.length == 2) {
             String destinationName = args[1];
             Player destination = Bukkit.getPlayer(destinationName);
 
             // Check if the destination player is online
             if (destination == null || !destination.isOnline()) {
-                player.sendMessage(plugin.getPrefix().append(MiniMessage.miniMessage().deserialize("<red>Player '" + destinationName + "' is not online.")));
+                player.sendMessage(plugin.getPrefix(player).append(MiniMessage.miniMessage().deserialize("<gray>Player '" + destinationName + "' is not online.")));
                 return true;
             }
 
             // Teleport target to destination
             target.teleport(destination.getLocation());
-            player.sendMessage(plugin.getPrefix().append(MiniMessage.miniMessage().deserialize("<green>Teleported " + target.getName() + " to " + destination.getName() + ".")));
+            player.sendMessage(plugin.getPrefix(player).append(MiniMessage.miniMessage().deserialize("<gray>Teleported " + target.getName() + " to " + destination.getName() + ".")));
         }
 
         return true;

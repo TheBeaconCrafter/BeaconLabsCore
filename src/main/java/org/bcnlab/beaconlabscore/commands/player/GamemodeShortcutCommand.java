@@ -48,13 +48,13 @@ public class GamemodeShortcutCommand implements CommandExecutor {
         if (args.length == 0) {
             // Setting own gamemode
             if (!(sender instanceof Player)) {
-                sender.sendMessage(plugin.getPrefix().append(MiniMessage.miniMessage().deserialize("<red>Console cannot change its own gamemode!")));
+                sender.sendMessage(plugin.getPrefix(sender).append(MiniMessage.miniMessage().deserialize("<gray>Console cannot change its own gamemode!")));
                 return true;
             }
             
             Player player = (Player) sender;
             if (!player.hasPermission("beaconlabs.core.gamemode.self")) {
-                player.sendMessage(plugin.getPrefix().append(LegacyComponentSerializer.legacyAmpersand().deserialize(plugin.getNoPermsMessage())));
+                player.sendMessage(plugin.getPrefix(player).append(LegacyComponentSerializer.legacyAmpersand().deserialize(plugin.getNoPermsMessage())));
                 return true;
             }
             
@@ -62,7 +62,7 @@ public class GamemodeShortcutCommand implements CommandExecutor {
         } else {
             // Setting another player's gamemode
             if (!sender.hasPermission("beaconlabs.core.gamemode.others")) {
-                sender.sendMessage(plugin.getPrefix().append(LegacyComponentSerializer.legacyAmpersand().deserialize(plugin.getNoPermsMessage())));
+                sender.sendMessage(plugin.getPrefix(sender).append(LegacyComponentSerializer.legacyAmpersand().deserialize(plugin.getNoPermsMessage())));
                 return true;
             }
             
@@ -70,7 +70,7 @@ public class GamemodeShortcutCommand implements CommandExecutor {
             Player target = Bukkit.getPlayer(targetName);
             
             if (target == null) {
-                sender.sendMessage(plugin.getPrefix().append(MiniMessage.miniMessage().deserialize("<red>Player '" + targetName + "' not found or is not online.")));
+                sender.sendMessage(plugin.getPrefix(sender).append(MiniMessage.miniMessage().deserialize("<gray>Player '" + targetName + "' not found or is not online.")));
                 return true;
             }
             
@@ -85,11 +85,11 @@ public class GamemodeShortcutCommand implements CommandExecutor {
         target.setGameMode(gameMode);
         
         if (!silent) {
-            target.sendMessage(plugin.getPrefix().append(MiniMessage.miniMessage().deserialize("<green>Your gamemode has been changed to <gold>" + gameModeName + "<green>.")));
+            target.sendMessage(plugin.getPrefix(target).append(MiniMessage.miniMessage().deserialize("<gray>Your gamemode has been changed to <gold>" + gameModeName + "<gray>.")));
         }
         
         if (sender != target && !silent) {
-            sender.sendMessage(plugin.getPrefix().append(MiniMessage.miniMessage().deserialize("<green>Changed <gold>" + target.getName() + "<green>'s gamemode to <gold>" + gameModeName + "<green>.")));
+            sender.sendMessage(plugin.getPrefix(sender).append(MiniMessage.miniMessage().deserialize("<gray>Changed <gold>" + target.getName() + "<gray>'s gamemode to <gold>" + gameModeName + "<gray>.")));
         }
     }
 }

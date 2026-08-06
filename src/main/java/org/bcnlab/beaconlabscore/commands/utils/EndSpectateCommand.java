@@ -23,7 +23,7 @@ public class EndSpectateCommand implements CommandExecutor {
     public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
         // Check if the command sender is a player
         if (!(sender instanceof Player)) {
-            sender.sendMessage(plugin.getPrefix().append(MiniMessage.miniMessage().deserialize("<red>Only players can use this command!")));
+            sender.sendMessage(plugin.getPrefix(sender).append(MiniMessage.miniMessage().deserialize("<gray>Only players can use this command!")));
             return true;
         }
 
@@ -31,7 +31,7 @@ public class EndSpectateCommand implements CommandExecutor {
 
         // Check permission
         if (!player.hasPermission("beaconlabs.core.endspectator")) {
-            player.sendMessage(plugin.getPrefix().append(MiniMessage.miniMessage().deserialize("<red>You do not have permission to use this command.")));
+            player.sendMessage(plugin.getPrefix(player).append(MiniMessage.miniMessage().deserialize("<gray>You do not have permission to use this command.")));
             return true;
         }
 
@@ -58,7 +58,7 @@ public class EndSpectateCommand implements CommandExecutor {
         }
 
         // Send confirmation message
-        spectator.sendMessage(plugin.getPrefix().append(MiniMessage.miniMessage().deserialize("<green>You are no longer spectating.")));
+        spectator.sendMessage(plugin.getPrefix(spectator).append(MiniMessage.miniMessage().deserialize("<gray>You are no longer spectating.")));
 
         // Clear title (if any)
         spectator.resetTitle();

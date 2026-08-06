@@ -27,28 +27,28 @@ public class DelWarpCommand implements CommandExecutor, TabCompleter {
     @Override
     public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
         if (!sender.hasPermission("beaconlabs.core.delwarp")) {
-            sender.sendMessage(plugin.getPrefix().append(LegacyComponentSerializer.legacyAmpersand().deserialize(plugin.getNoPermsMessage())));
+            sender.sendMessage(plugin.getPrefix(sender).append(LegacyComponentSerializer.legacyAmpersand().deserialize(plugin.getNoPermsMessage())));
             return true;
         }
         
         if (args.length < 1) {
-            sender.sendMessage(plugin.getPrefix().append(MiniMessage.miniMessage().deserialize("<red>Usage: /delwarp <name>")));
+            sender.sendMessage(plugin.getPrefix(sender).append(MiniMessage.miniMessage().deserialize("<gray>Usage: /delwarp <name>")));
             return true;
         }
         
         String warpName = args[0];
         
         if (!warpManager.warpExists(warpName)) {
-            sender.sendMessage(plugin.getPrefix().append(MiniMessage.miniMessage().deserialize("<red>Warp '" + warpName + "' does not exist!")));
+            sender.sendMessage(plugin.getPrefix(sender).append(MiniMessage.miniMessage().deserialize("<gray>Warp '" + warpName + "' does not exist!")));
             return true;
         }
         
         boolean success = warpManager.deleteWarp(warpName);
         
         if (success) {
-            sender.sendMessage(plugin.getPrefix().append(MiniMessage.miniMessage().deserialize("<green>Warp '" + warpName + "' has been deleted.")));
+            sender.sendMessage(plugin.getPrefix(sender).append(MiniMessage.miniMessage().deserialize("<gray>Warp '" + warpName + "' has been deleted.")));
         } else {
-            sender.sendMessage(plugin.getPrefix().append(MiniMessage.miniMessage().deserialize("<red>Failed to delete warp '" + warpName + "'.")));
+            sender.sendMessage(plugin.getPrefix(sender).append(MiniMessage.miniMessage().deserialize("<gray>Failed to delete warp '" + warpName + "'.")));
         }
         
         return true;

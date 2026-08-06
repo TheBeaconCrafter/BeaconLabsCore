@@ -19,19 +19,19 @@ public class GlobalMuteCommand implements CommandExecutor {
     @Override
     public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
         if (!(sender instanceof Player)) {
-            sender.sendMessage(plugin.getPrefix().append(MiniMessage.miniMessage().deserialize("<red>This command can only be used by players.")));
+            sender.sendMessage(plugin.getPrefix(sender).append(MiniMessage.miniMessage().deserialize("<gray>This command can only be used by players.")));
             return true;
         }
 
         Player player = (Player) sender;
         if (!player.hasPermission("beaconlabs.core.globalmute")) {
-            player.sendMessage(plugin.getPrefix().append(LegacyComponentSerializer.legacyAmpersand().deserialize(plugin.getNoPermsMessage())));
+            player.sendMessage(plugin.getPrefix(player).append(LegacyComponentSerializer.legacyAmpersand().deserialize(plugin.getNoPermsMessage())));
             return true;
         }
 
         globalmute = !globalmute;
         String status = globalmute ? "deactivated" : "reactivated";
-        player.sendMessage(plugin.getPrefix().append(MiniMessage.miniMessage().deserialize("<green>Chat was " + status + "!")));
+        player.sendMessage(plugin.getPrefix(player).append(MiniMessage.miniMessage().deserialize("<gray>Chat was " + status + "!")));
 
         return true;
     }

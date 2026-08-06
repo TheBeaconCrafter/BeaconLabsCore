@@ -23,7 +23,7 @@ public class TpsCommand implements CommandExecutor {
         if (sender instanceof Player) {
             Player player = (Player) sender;
             if (!player.hasPermission("beaconlabs.core.stats")) {
-                player.sendMessage(plugin.getPrefix().append(MiniMessage.miniMessage().deserialize("<red>You do not have permission to use this command.")));
+                player.sendMessage(plugin.getPrefix(player).append(MiniMessage.miniMessage().deserialize("<gray>You do not have permission to use this command.")));
                 return true;
             }
         }
@@ -47,8 +47,8 @@ public class TpsCommand implements CommandExecutor {
         }
 
         String message = String.format(
-                "<green>Memory Usage:\n<aqua>Used: <yellow>%.2f MB\n<aqua>Free: <yellow>%.2f MB\n<aqua>Total: <yellow>%.2f MB\n<aqua>Max: <yellow>%.2f MB\n" +
-                        "<green>Entities:\n<aqua>Total Entities: <yellow>%d\n<aqua>Living Entities: <yellow>%d",
+                "<gray>Memory Usage:\n<gold>Used: <gold>%.2f MB\n<gold>Free: <gold>%.2f MB\n<gold>Total: <gold>%.2f MB\n<gold>Max: <gold>%.2f MB\n" +
+                        "<gray>Entities:\n<gold>Total Entities: <gold>%d\n<gold>Living Entities: <gold>%d",
                 usedMemory / 1048576.0,
                 freeMemory / 1048576.0,
                 totalMemory / 1048576.0,
@@ -57,7 +57,7 @@ public class TpsCommand implements CommandExecutor {
                 livingEntities
         );
 
-        sender.sendMessage(plugin.getPrefix().append(MiniMessage.miniMessage().deserialize(message)));
+        sender.sendMessage(plugin.getPrefix(sender).append(MiniMessage.miniMessage().deserialize(message)));
         return true;
     }
 }

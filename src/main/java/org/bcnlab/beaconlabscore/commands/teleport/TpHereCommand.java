@@ -21,7 +21,7 @@ public class TpHereCommand implements CommandExecutor {
     public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
         // Check if the command sender is a player
         if (!(sender instanceof Player)) {
-            sender.sendMessage(plugin.getPrefix().append(MiniMessage.miniMessage().deserialize("<red>Only players can use this command!")));
+            sender.sendMessage(plugin.getPrefix(sender).append(MiniMessage.miniMessage().deserialize("<gray>Only players can use this command!")));
             return true;
         }
 
@@ -29,13 +29,13 @@ public class TpHereCommand implements CommandExecutor {
 
         // Check permission
         if (!player.hasPermission("beaconlabs.core.tp")) {
-            player.sendMessage(plugin.getPrefix().append(MiniMessage.miniMessage().deserialize("<red>You do not have permission to use this command.")));
+            player.sendMessage(plugin.getPrefix(player).append(MiniMessage.miniMessage().deserialize("<gray>You do not have permission to use this command.")));
             return true;
         }
 
         // Validate command usage
         if (args.length != 1) {
-            player.sendMessage(plugin.getPrefix().append(MiniMessage.miniMessage().deserialize("<red>Usage: /tphere <player>")));
+            player.sendMessage(plugin.getPrefix(player).append(MiniMessage.miniMessage().deserialize("<gray>Usage: /tphere <player>")));
             return true;
         }
 
@@ -44,13 +44,13 @@ public class TpHereCommand implements CommandExecutor {
 
         // Check if the target player is online
         if (target == null || !target.isOnline()) {
-            player.sendMessage(plugin.getPrefix().append(MiniMessage.miniMessage().deserialize("<red>Player '" + targetName + "' is not online.")));
+            player.sendMessage(plugin.getPrefix(player).append(MiniMessage.miniMessage().deserialize("<gray>Player '" + targetName + "' is not online.")));
             return true;
         }
 
         // Teleport target to sender's location
         target.teleport(player.getLocation());
-        player.sendMessage(plugin.getPrefix().append(MiniMessage.miniMessage().deserialize("<green>Teleported " + target.getName() + " to your location.")));
+        player.sendMessage(plugin.getPrefix(player).append(MiniMessage.miniMessage().deserialize("<gray>Teleported " + target.getName() + " to your location.")));
 
         return true;
     }

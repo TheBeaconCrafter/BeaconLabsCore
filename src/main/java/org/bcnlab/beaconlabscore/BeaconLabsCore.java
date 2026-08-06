@@ -35,6 +35,8 @@ import io.papermc.paper.plugin.lifecycle.event.types.LifecycleEvents;
 public final class BeaconLabsCore extends JavaPlugin implements Listener {
 
     private String pluginPrefix;
+    private String legacyPrefixString;
+    private Component legacyPrefix;
     private String pluginVersion = "1.3.0";
     private ChatFormatter chatFormatter;
     private org.bcnlab.beaconlabscore.listeners.NametagGenerator nametagGenerator;
@@ -94,7 +96,7 @@ public final class BeaconLabsCore extends JavaPlugin implements Listener {
         final Player p = event.getPlayer();
         if (GlobalMuteCommand.globalmute) {
             if (!p.hasPermission("beaconlabs.core.globalmute.ignore")) {
-                p.sendMessage(getPrefix().append(net.kyori.adventure.text.minimessage.MiniMessage.miniMessage().deserialize("<green>Chat is <red>deactivated!")));
+                p.sendMessage(getPrefix(p).append(net.kyori.adventure.text.minimessage.MiniMessage.miniMessage().deserialize("<gray>Chat is <gold>deactivated!")));
                 event.setCancelled(true);
             } else {
                 chatFormatter.onPlayerChat(event.getPlayer(), event.getMessage());
@@ -141,6 +143,9 @@ public final class BeaconLabsCore extends JavaPlugin implements Listener {
 
         // Prepend prefix to custom messages (legacy section codes from config)
         customDeathMessage = pluginPrefix + customDeathMessage;
+        
+        legacyPrefixString = config.getString("legacy-prefix", "&6BeaconLabs &8» &7");
+        legacyPrefix = net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer.legacyAmpersand().deserialize(legacyPrefixString);
     }
 
     // Method to create the default configuration if it doesn't exist
@@ -160,6 +165,32 @@ public final class BeaconLabsCore extends JavaPlugin implements Listener {
 
     public Component getPrefix() {
         return MiniMessage.miniMessage().deserialize(pluginPrefix);
+    }
+
+    public Component getPrefix(Player player) {
+        if (org.bukkit.Bukkit.getPluginManager().isPluginEnabled("ViaVersion")) {
+            try {
+                int protocol = com.viaversion.viaversion.api.Via.getAPI().getPlayerVersion(player.getUniqueId());
+                if (protocol < 735) { // 1.16 is protocol version 735
+                    return legacyPrefix;
+                }
+            } catch (Exception e) {}
+        }
+        return getPrefix();
+    }
+    
+    public Component getPrefix(CommandSourceStack source) {
+        if (source.getSender() instanceof Player p) {
+            return getPrefix(p);
+        }
+        return getPrefix();
+    }
+    
+    public Component getPrefix(org.bukkit.command.CommandSender sender) {
+        if (sender instanceof Player p) {
+            return getPrefix(p);
+        }
+        return getPrefix();
     }
 
     public String getVersion() {

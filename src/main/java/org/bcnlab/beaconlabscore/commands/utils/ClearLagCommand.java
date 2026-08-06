@@ -68,20 +68,20 @@ public class ClearLagCommand implements CommandExecutor {
             }
 
             String message = String.format(
-                    "<green>Entities removed:\n" +
-                            "<aqua>Items: <yellow>%d\n" +
-                            "<aqua>Animals: <yellow>%d\n" +
-                            "<aqua>Monsters: <yellow>%d\n" +
-                            "<aqua>Dropped Items: <yellow>%d\n" +
-                            "<aqua>Experience Orbs: <yellow>%d\n" +
-                            "<aqua>Minecarts: <yellow>%d",
+                    "<gray>Entities removed:\n" +
+                            "<gray>Items: <gold>%d\n" +
+                            "<gray>Animals: <gold>%d\n" +
+                            "<gray>Monsters: <gold>%d\n" +
+                            "<gray>Dropped Items: <gold>%d\n" +
+                            "<gray>Experience Orbs: <gold>%d\n" +
+                            "<gray>Minecarts: <gold>%d",
                     itemsRemoved, animalsRemoved, monstersRemoved,
                     droppedItemsRemoved, experienceOrbsRemoved, minecartsRemoved
             );
-            sender.sendMessage(plugin.getPrefix().append(MiniMessage.miniMessage().deserialize(message)));
+            sender.sendMessage(plugin.getPrefix(sender).append(MiniMessage.miniMessage().deserialize(message)));
             return true; // Command executed successfully
         } else {
-            sender.sendMessage(plugin.getPrefix().append(LegacyComponentSerializer.legacyAmpersand().deserialize(plugin.getNoPermsMessage())));
+            sender.sendMessage(plugin.getPrefix(sender).append(LegacyComponentSerializer.legacyAmpersand().deserialize(plugin.getNoPermsMessage())));
             return true; // Command executed, but no permission
         }
     }

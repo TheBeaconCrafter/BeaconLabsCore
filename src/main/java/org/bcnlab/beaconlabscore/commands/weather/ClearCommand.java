@@ -20,19 +20,19 @@ public class ClearCommand implements CommandExecutor {
     @Override
     public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
         if (!(sender instanceof Player)) {
-            sender.sendMessage(MiniMessage.miniMessage().deserialize("<red>Only players can use this command."));
+            sender.sendMessage(MiniMessage.miniMessage().deserialize("<gray>Only players can use this command."));
             return true;
         }
 
         Player player = (Player) sender;
 
         if (!player.hasPermission("beaconlabs.core.weather")) {
-            player.sendMessage(plugin.getPrefix().append(MiniMessage.miniMessage().deserialize("<red>You do not have permission to change the weather.")));
+            player.sendMessage(plugin.getPrefix(player).append(MiniMessage.miniMessage().deserialize("<gray>You do not have permission to change the weather.")));
             return true;
         }
 
         if (args.length > 0) {
-            sender.sendMessage(plugin.getPrefix().append(MiniMessage.miniMessage().deserialize("<red>Usage: /clear")));
+            sender.sendMessage(plugin.getPrefix(sender).append(MiniMessage.miniMessage().deserialize("<gray>Usage: /clear")));
             return true;
         }
 
@@ -40,7 +40,7 @@ public class ClearCommand implements CommandExecutor {
 
         world.setStorm(false);
         world.setThundering(false);
-        player.sendMessage(plugin.getPrefix().append(MiniMessage.miniMessage().deserialize("<green>Set weather to clear.")));
+        player.sendMessage(plugin.getPrefix(player).append(MiniMessage.miniMessage().deserialize("<gray>Set weather to clear.")));
 
         return true;
     }

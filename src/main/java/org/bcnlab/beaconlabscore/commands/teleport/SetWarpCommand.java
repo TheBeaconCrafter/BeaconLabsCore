@@ -22,19 +22,19 @@ public class SetWarpCommand implements CommandExecutor {
     @Override
     public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
         if (!(sender instanceof Player)) {
-            sender.sendMessage(plugin.getPrefix().append(MiniMessage.miniMessage().deserialize("<red>This command can only be used by players.")));
+            sender.sendMessage(plugin.getPrefix(sender).append(MiniMessage.miniMessage().deserialize("<gray>This command can only be used by players.")));
             return true;
         }
         
         Player player = (Player) sender;
         
         if (!player.hasPermission("beaconlabs.core.setwarp")) {
-            player.sendMessage(plugin.getPrefix().append(LegacyComponentSerializer.legacyAmpersand().deserialize(plugin.getNoPermsMessage())));
+            player.sendMessage(plugin.getPrefix(player).append(LegacyComponentSerializer.legacyAmpersand().deserialize(plugin.getNoPermsMessage())));
             return true;
         }
         
         if (args.length < 1) {
-            player.sendMessage(plugin.getPrefix().append(MiniMessage.miniMessage().deserialize("<red>Usage: /setwarp <name>")));
+            player.sendMessage(plugin.getPrefix(player).append(MiniMessage.miniMessage().deserialize("<gray>Usage: /setwarp <name>")));
             return true;
         }
         
@@ -42,21 +42,21 @@ public class SetWarpCommand implements CommandExecutor {
         
         // Validate warp name (alphanumeric and underscore only)
         if (!warpName.matches("^[a-zA-Z0-9_]+$")) {
-            player.sendMessage(plugin.getPrefix().append(MiniMessage.miniMessage().deserialize("<red>Warp names can only contain letters, numbers, and underscores.")));
+            player.sendMessage(plugin.getPrefix(player).append(MiniMessage.miniMessage().deserialize("<gray>Warp names can only contain letters, numbers, and underscores.")));
             return true;
         }
         
         if (warpManager.warpExists(warpName)) {
-            player.sendMessage(plugin.getPrefix().append(MiniMessage.miniMessage().deserialize("<red>A warp with that name already exists! Use /delwarp first if you want to replace it.")));
+            player.sendMessage(plugin.getPrefix(player).append(MiniMessage.miniMessage().deserialize("<gray>A warp with that name already exists! Use /delwarp first if you want to replace it.")));
             return true;
         }
         
         boolean success = warpManager.createWarp(warpName, player.getLocation());
         
         if (success) {
-            player.sendMessage(plugin.getPrefix().append(MiniMessage.miniMessage().deserialize("<green>Warp '" + warpName + "' has been created.")));
+            player.sendMessage(plugin.getPrefix(player).append(MiniMessage.miniMessage().deserialize("<gray>Warp '" + warpName + "' has been created.")));
         } else {
-            player.sendMessage(plugin.getPrefix().append(MiniMessage.miniMessage().deserialize("<red>Failed to create warp '" + warpName + "'.")));
+            player.sendMessage(plugin.getPrefix(player).append(MiniMessage.miniMessage().deserialize("<gray>Failed to create warp '" + warpName + "'.")));
         }
         
         return true;

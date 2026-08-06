@@ -18,17 +18,17 @@ public class CoreCommand implements CommandExecutor {
     @Override
     public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
         if (!(sender instanceof Player)) {
-            sender.sendMessage(plugin.getPrefix().append(MiniMessage.miniMessage().deserialize("<red>This command can only be used by players.")));
+            sender.sendMessage(plugin.getPrefix(sender).append(MiniMessage.miniMessage().deserialize("<gray>This command can only be used by players.")));
             return true;
         }
 
         if (!sender.hasPermission("beaconlabs.core.info")) {
-            sender.sendMessage(plugin.getPrefix().append(MiniMessage.miniMessage().deserialize("<red>You do not have permission to use this command.")));
+            sender.sendMessage(plugin.getPrefix(sender).append(MiniMessage.miniMessage().deserialize("<gray>You do not have permission to use this command.")));
             return true;
         }
 
         Player player = (Player) sender;
-        player.sendMessage(plugin.getPrefix().append(MiniMessage.miniMessage().deserialize("<red>BeaconLabsCore Version <gold>" + plugin.getVersion() + "<red> by ItsBeacon")));
+        player.sendMessage(plugin.getPrefix(player).append(MiniMessage.miniMessage().deserialize("<gray>BeaconLabsCore Version <gold>" + plugin.getVersion() + "<gray> by ItsBeacon")));
         return true;
     }
 }

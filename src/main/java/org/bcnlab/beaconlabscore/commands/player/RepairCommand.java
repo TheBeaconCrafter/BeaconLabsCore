@@ -31,7 +31,7 @@ public class RepairCommand implements CommandExecutor, TabCompleter {
     @Override
     public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
         if (!sender.hasPermission("beaconlabs.core.repair")) {
-            sender.sendMessage(plugin.getPrefix().append(LegacyComponentSerializer.legacyAmpersand().deserialize(plugin.getNoPermsMessage())));
+            sender.sendMessage(plugin.getPrefix(sender).append(LegacyComponentSerializer.legacyAmpersand().deserialize(plugin.getNoPermsMessage())));
             return true;
         }
 
@@ -40,34 +40,34 @@ public class RepairCommand implements CommandExecutor, TabCompleter {
         if (args.length >= 1) {
             // Command used as: /repair <player>
             if (!sender.hasPermission("beaconlabs.core.repair.others")) {
-                sender.sendMessage(plugin.getPrefix().append(MiniMessage.miniMessage().deserialize("<red>You don't have permission to repair other players' items.")));
+                sender.sendMessage(plugin.getPrefix(sender).append(MiniMessage.miniMessage().deserialize("<gray>You don't have permission to repair other players' items.")));
                 return true;
             }
 
             target = Bukkit.getPlayer(args[0]);
             if (target == null) {
-                sender.sendMessage(plugin.getPrefix().append(MiniMessage.miniMessage().deserialize("<red>Player '" + args[0] + "' not found or is not online.")));
+                sender.sendMessage(plugin.getPrefix(sender).append(MiniMessage.miniMessage().deserialize("<gray>Player '" + args[0] + "' not found or is not online.")));
                 return true;
             }
         } else if (sender instanceof Player) {
             // Command used as: /repair
             target = (Player) sender;
         } else {
-            sender.sendMessage(plugin.getPrefix().append(MiniMessage.miniMessage().deserialize("<red>Console must specify a player: /repair <player>")));
+            sender.sendMessage(plugin.getPrefix(sender).append(MiniMessage.miniMessage().deserialize("<gray>Console must specify a player: /repair <player>")));
             return true;
         }
 
         ItemStack item = target.getInventory().getItemInMainHand();
         
         if (item == null || item.getType() == Material.AIR) {
-            sender.sendMessage(plugin.getPrefix().append(MiniMessage.miniMessage().deserialize("<red>" + (sender == target ? "You are" : target.getName() + " is") + " not holding any item.")));
+            sender.sendMessage(plugin.getPrefix(sender).append(MiniMessage.miniMessage().deserialize("<gray>" + (sender == target ? "You are" : target.getName() + " is") + " not holding any item.")));
             return true;
         }
         
         // Check if the item can be damaged
         ItemMeta meta = item.getItemMeta();
         if (!(meta instanceof Damageable)) {
-            sender.sendMessage(plugin.getPrefix().append(MiniMessage.miniMessage().deserialize("<red>This item cannot be repaired.")));
+            sender.sendMessage(plugin.getPrefix(sender).append(MiniMessage.miniMessage().deserialize("<gray>This item cannot be repaired.")));
             return true;
         }
         
@@ -75,7 +75,7 @@ public class RepairCommand implements CommandExecutor, TabCompleter {
         
         // Check if the item is already at full durability
         if (!damageable.hasDamage()) {
-            sender.sendMessage(plugin.getPrefix().append(MiniMessage.miniMessage().deserialize("<yellow>This item is already at full durability.")));
+            sender.sendMessage(plugin.getPrefix(sender).append(MiniMessage.miniMessage().deserialize("<gray>This item is already at full durability.")));
             return true;
         }
         
@@ -85,10 +85,10 @@ public class RepairCommand implements CommandExecutor, TabCompleter {
         String itemName = formatItemName(item.getType().name());
         
         if (sender != target) {
-            sender.sendMessage(plugin.getPrefix().append(MiniMessage.miniMessage().deserialize("<green>You repaired " + target.getName() + "'s " + itemName + ".")));
-            target.sendMessage(plugin.getPrefix().append(MiniMessage.miniMessage().deserialize("<green>Your " + itemName + " was repaired by " + sender.getName() + ".")));
+            sender.sendMessage(plugin.getPrefix(sender).append(MiniMessage.miniMessage().deserialize("<gray>You repaired " + target.getName() + "'s " + itemName + ".")));
+            target.sendMessage(plugin.getPrefix(target).append(MiniMessage.miniMessage().deserialize("<gray>Your " + itemName + " was repaired by " + sender.getName() + ".")));
         } else {
-            sender.sendMessage(plugin.getPrefix().append(MiniMessage.miniMessage().deserialize("<green>You repaired your " + itemName + ".")));
+            sender.sendMessage(plugin.getPrefix(sender).append(MiniMessage.miniMessage().deserialize("<gray>You repaired your " + itemName + ".")));
         }
         
         return true;
