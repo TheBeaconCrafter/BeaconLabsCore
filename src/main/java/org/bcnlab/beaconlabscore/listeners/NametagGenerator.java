@@ -118,11 +118,17 @@ public class NametagGenerator implements Listener {
         
         if (isLegacy) {
             String legacyPrefixStr = net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer.builder().character('§').build().serialize(prefixComponent);
-            if (legacyPrefixStr.length() > 16) legacyPrefixStr = legacyPrefixStr.substring(0, 16);
+            if (legacyPrefixStr.length() > 16) {
+                legacyPrefixStr = legacyPrefixStr.substring(0, 16);
+                if (legacyPrefixStr.endsWith("§")) legacyPrefixStr = legacyPrefixStr.substring(0, 15);
+            }
             prefixComponent = net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer.builder().character('§').build().deserialize(legacyPrefixStr);
             
             String legacySuffixStr = net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer.builder().character('§').build().serialize(suffixComponent);
-            if (legacySuffixStr.length() > 16) legacySuffixStr = legacySuffixStr.substring(0, 16);
+            if (legacySuffixStr.length() > 16) {
+                legacySuffixStr = legacySuffixStr.substring(0, 16);
+                if (legacySuffixStr.endsWith("§")) legacySuffixStr = legacySuffixStr.substring(0, 15);
+            }
             suffixComponent = net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer.builder().character('§').build().deserialize(legacySuffixStr);
         }
 
