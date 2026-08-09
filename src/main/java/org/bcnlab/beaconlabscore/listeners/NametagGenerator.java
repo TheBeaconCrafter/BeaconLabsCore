@@ -111,6 +111,21 @@ public class NametagGenerator implements Listener {
             }
         }
         
+        boolean isLegacy = false;
+        if (player.hasMetadata("protocol_version") && player.getMetadata("protocol_version").get(0).asInt() <= 47) {
+            isLegacy = true;
+        }
+        
+        if (isLegacy) {
+            String legacyPrefixStr = net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer.builder().character('§').build().serialize(prefixComponent);
+            if (legacyPrefixStr.length() > 16) legacyPrefixStr = legacyPrefixStr.substring(0, 16);
+            prefixComponent = net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer.builder().character('§').build().deserialize(legacyPrefixStr);
+            
+            String legacySuffixStr = net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer.builder().character('§').build().serialize(suffixComponent);
+            if (legacySuffixStr.length() > 16) legacySuffixStr = legacySuffixStr.substring(0, 16);
+            suffixComponent = net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer.builder().character('§').build().deserialize(legacySuffixStr);
+        }
+
         team.prefix(prefixComponent);
         team.suffix(suffixComponent);
         team.addEntry(player.getName());

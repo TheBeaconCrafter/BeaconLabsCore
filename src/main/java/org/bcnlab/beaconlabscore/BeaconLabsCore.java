@@ -87,7 +87,7 @@ public final class BeaconLabsCore extends JavaPlugin implements Listener {
 
 
         // Plugin startup logic
-        getLogger().info(pluginPrefix + "BeaconLabsCore was enabled!");
+        org.bukkit.Bukkit.getConsoleSender().sendMessage(getPrefix().append(Component.text("BeaconLabsCore was enabled!", net.kyori.adventure.text.format.NamedTextColor.GREEN)));
     }
 
     @EventHandler
@@ -115,7 +115,7 @@ public final class BeaconLabsCore extends JavaPlugin implements Listener {
         }
 
         // Plugin shutdown logic
-        getLogger().info(pluginPrefix + "BeaconLabsCore was disabled!");
+        org.bukkit.Bukkit.getConsoleSender().sendMessage(getPrefix().append(Component.text("BeaconLabsCore was disabled!", net.kyori.adventure.text.format.NamedTextColor.RED)));
     }
 
     public org.bcnlab.beaconlabscore.listeners.NametagGenerator getNametagGenerator() {
@@ -168,14 +168,19 @@ public final class BeaconLabsCore extends JavaPlugin implements Listener {
     }
 
     public Component getPrefix(Player player) {
-        if (org.bukkit.Bukkit.getPluginManager().isPluginEnabled("ViaVersion")) {
-            try {
-                int protocol = com.viaversion.viaversion.api.Via.getAPI().getPlayerVersion(player.getUniqueId());
-                if (protocol < 735) { // 1.16 is protocol version 735
+        try {
+            if (player.hasMetadata("protocol_version")) {
+                int protocol = player.getMetadata("protocol_version").get(0).asInt();
+                if (protocol <= 47) {
                     return legacyPrefix;
                 }
-            } catch (Exception e) {}
-        }
+            } else if (org.bukkit.Bukkit.getPluginManager().isPluginEnabled("ViaVersion")) {
+                int protocol = com.viaversion.viaversion.api.Via.getAPI().getPlayerVersion(player.getUniqueId());
+                if (protocol <= 47) { 
+                    return legacyPrefix;
+                }
+            }
+        } catch (Exception e) {}
         return getPrefix();
     }
     
