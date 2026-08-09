@@ -44,8 +44,11 @@ public class ChatFormatter {
                         }
                         net.luckperms.api.model.group.Group group = luckPerms.getGroupManager().getGroup(fakeRank.toLowerCase());
                         if (group != null) {
-                            prefix = group.getCachedData().getMetaData(QueryOptions.defaultContextualOptions()).getPrefix();
-                            suffix = group.getCachedData().getMetaData(QueryOptions.defaultContextualOptions()).getSuffix();
+                            prefix = group.getNodes(net.luckperms.api.node.NodeType.PREFIX).stream().map(net.luckperms.api.node.types.PrefixNode::getMetaValue).findFirst().orElse(null);
+                            suffix = group.getNodes(net.luckperms.api.node.NodeType.SUFFIX).stream().map(net.luckperms.api.node.types.SuffixNode::getMetaValue).findFirst().orElse(null);
+                            Bukkit.getLogger().info("ChatFormatter Debug: player=" + player.getName() + " fakeRank=" + fakeRank + " groupName=" + group.getName() + " prefix=" + prefix);
+                        } else {
+                            Bukkit.getLogger().info("ChatFormatter Debug: player=" + player.getName() + " fakeRank=" + fakeRank + " GROUP IS NULL");
                         }
                     } else {
                         try {

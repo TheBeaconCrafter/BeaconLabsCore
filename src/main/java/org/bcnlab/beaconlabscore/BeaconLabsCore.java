@@ -37,7 +37,7 @@ public final class BeaconLabsCore extends JavaPlugin implements Listener {
     private String pluginPrefix;
     private String legacyPrefixString;
     private Component legacyPrefix;
-    private String pluginVersion = "1.3.0";
+    private String pluginVersion = "1.3.1";
     private ChatFormatter chatFormatter;
     private org.bcnlab.beaconlabscore.listeners.NametagGenerator nametagGenerator;
     private WarpManager warpManager;
