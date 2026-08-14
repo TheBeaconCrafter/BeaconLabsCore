@@ -58,7 +58,7 @@ final class EntityTargetResolver {
         return exact != null && exact.isOnline() ? List.of(exact) : List.of();
     }
 
-    static List<String> selectorSuggestions(String partial) {
+    static List<String> selectorSuggestions(String partial, Player source) {
         String value = partial == null ? "" : partial;
         if (!value.regionMatches(true, 0, "@e[", 0, 3)) {
             return List.of("*", "@a", "@p", "@r", "@s", "@e");
@@ -90,7 +90,16 @@ final class EntityTargetResolver {
             return suggestions;
         }
 
-        if (optionPrefix.contains("=")) {
+        int equals = optionPrefix.indexOf('=');
+        if (equals >= 0) {
+            String key = optionPrefix.substring(0, equals).toLowerCase(Locale.ROOT);
+            String valuePartial = optionPrefix.substring(equals + 1).toLowerCase(Locale.ROOT);
+            List<String> values = selectorValues(key, source);
+            if (!values.isEmpty()) {
+                boolean negatable = key.equals("name") || key.equals("gamemode")
+                        || key.equals("tag") || key.equals("team");
+                return completeSelectorValues(optionBase, key, valuePartial, values, negatable);
+            }
             return List.of();
         }
 
@@ -101,6 +110,45 @@ final class EntityTargetResolver {
             }
         }
         return suggestions;
+    }
+
+    private static List<String> selectorValues(String key, Player source) {
+        return switch (key) {
+            case "sort" -> List.of("nearest", "furthest", "random", "arbitrary");
+            case "gamemode" -> List.of("survival", "creative", "adventure", "spectator");
+            case "limit" -> List.of("1", "2", "5", "10", "20", "50", "100");
+            case "distance" -> List.of("..5", "..10", "..32", "5..", "5..10");
+            case "level" -> List.of("0", "1", "10", "..10", "10..");
+            case "x" -> coordinateValues(source.getLocation().getX());
+            case "y" -> coordinateValues(source.getLocation().getY());
+            case "z" -> coordinateValues(source.getLocation().getZ());
+            case "dx", "dy", "dz" -> List.of("0", "1", "5", "10");
+            case "name" -> loadedEntities().stream().map(Entity::getName).distinct().sorted().toList();
+            case "tag" -> loadedEntities().stream().flatMap(entity -> entity.getScoreboardTags().stream())
+                    .distinct().sorted().toList();
+            case "team" -> Bukkit.getScoreboardManager().getMainScoreboard().getTeams().stream()
+                    .map(team -> team.getName()).sorted().toList();
+            default -> List.of();
+        };
+    }
+
+    private static List<String> completeSelectorValues(String optionBase, String key, String partial,
+                                                        List<String> values, boolean negatable) {
+        List<String> suggestions = new ArrayList<>();
+        for (String value : values) {
+            if (value.toLowerCase(Locale.ROOT).startsWith(partial)) {
+                suggestions.add(optionBase + key + "=" + value + "]");
+            }
+            if (negatable && ("!" + value).toLowerCase(Locale.ROOT).startsWith(partial)) {
+                suggestions.add(optionBase + key + "=!" + value + "]");
+            }
+        }
+        return suggestions;
+    }
+
+    private static List<String> coordinateValues(double coordinate) {
+        return List.of("~", "~0", String.format(Locale.ROOT, "%.2f", coordinate),
+                String.valueOf((int) Math.floor(coordinate)));
     }
 
     private static List<Entity> resolveEntitySelector(String expression, Player source) {
@@ -326,6 +374,7 @@ final class EntityTargetResolver {
         return java.util.Arrays.stream(EntityType.values())
                 .filter(type -> type != EntityType.UNKNOWN && type.getKey() != null)
                 .map(type -> type.getKey().getKey())
+                .flatMap(key -> java.util.stream.Stream.of(key, "minecraft:" + key))
                 .distinct()
                 .sorted()
                 .toList();

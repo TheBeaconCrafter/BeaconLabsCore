@@ -101,7 +101,7 @@ public class TpcCommand implements io.papermc.paper.command.brigadier.BasicComma
         if (args.length <= 1) {
             suggestions.addAll(Bukkit.getOnlinePlayers().stream().map(Player::getName).toList());
             suggestions.addAll(EntityTargetResolver.selectorSuggestions(
-                    org.bcnlab.beaconlabscore.commands.CommandCompletion.argument(args, 0)));
+                    org.bcnlab.beaconlabscore.commands.CommandCompletion.argument(args, 0), player));
             suggestions.addAll(coordinateValues(player.getLocation().getX()));
         } else if (args.length == 2) {
             List<Entity> targets = EntityTargetResolver.resolve(args[0], player);

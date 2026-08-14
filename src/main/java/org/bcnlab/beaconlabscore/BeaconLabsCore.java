@@ -26,10 +26,12 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.AsyncPlayerChatEvent;
+import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.java.JavaPlugin;
 import io.papermc.paper.command.brigadier.CommandSourceStack;
 import io.papermc.paper.plugin.lifecycle.event.types.LifecycleEvents;
 
+import java.lang.reflect.Method;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
@@ -44,6 +46,7 @@ public final class BeaconLabsCore extends JavaPlugin implements Listener {
     private org.bcnlab.beaconlabscore.listeners.NametagGenerator nametagGenerator;
     private WarpManager warpManager;
     private final Map<UUID, Location> lastDeathLocations = new HashMap<>();
+    private Method velocityLinkProtocolMethod;
     public WarpManager getWarpManager() { return warpManager; }
 
     public void recordDeathLocation(Player player) {
@@ -79,6 +82,7 @@ public final class BeaconLabsCore extends JavaPlugin implements Listener {
         
         // Initialize the WarpManager
         warpManager = new WarpManager(this);
+        initializeVelocityLink();
 
         // Register other commands and listeners
         getServer().getPluginManager().registerEvents(this, this);
@@ -177,15 +181,47 @@ public final class BeaconLabsCore extends JavaPlugin implements Listener {
     }
 
     public Component getPrefix(Player player) {
+        return getPlayerProtocolVersion(player) < 735 ? legacyPrefix : getPrefix();
+    }
+
+    private void initializeVelocityLink() {
+        Plugin link = getServer().getPluginManager().getPlugin("BeaconLabsVelocityLink");
+        if (link == null || !link.isEnabled()) {
+            getLogger().warning("BeaconLabsVelocityLink is not enabled; using the modern prefix fallback.");
+            return;
+        }
+
         try {
-            if (player.hasMetadata("protocol_version")) {
-                int protocol = player.getMetadata("protocol_version").get(0).asInt();
-                if (protocol <= 47) {
-                    return legacyPrefix;
+            velocityLinkProtocolMethod = link.getClass().getMethod("getProtocolVersion", UUID.class);
+            getLogger().info("Connected to BeaconLabsVelocityLink for player protocol detection.");
+        } catch (ReflectiveOperationException exception) {
+            getLogger().warning("BeaconLabsVelocityLink does not expose getProtocolVersion(UUID); using metadata fallback.");
+        }
+    }
+
+    private int getPlayerProtocolVersion(Player player) {
+        if (velocityLinkProtocolMethod != null) {
+            Plugin link = getServer().getPluginManager().getPlugin("BeaconLabsVelocityLink");
+            if (link != null) {
+                try {
+                    Object result = velocityLinkProtocolMethod.invoke(link, player.getUniqueId());
+                    if (result instanceof Number number) {
+                        return number.intValue();
+                    }
+                } catch (ReflectiveOperationException ignored) {
+                    // Fall through to the metadata/default path if the optional link is unavailable.
                 }
             }
-        } catch (Exception e) {}
-        return getPrefix();
+        }
+
+        if (player.hasMetadata("protocol_version")) {
+            try {
+                return player.getMetadata("protocol_version").get(0).asInt();
+            } catch (Exception ignored) {
+                // Use the modern fallback below.
+            }
+        }
+        return 765;
     }
     
     public Component getPrefix(CommandSourceStack source) {

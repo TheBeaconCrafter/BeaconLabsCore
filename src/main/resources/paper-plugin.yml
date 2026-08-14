@@ -10,3 +10,7 @@ dependencies:
       load: BEFORE
       required: true
       join-classpath: true
+    BeaconLabsVelocityLink:
+      load: BEFORE
+      required: false
+      join-classpath: false

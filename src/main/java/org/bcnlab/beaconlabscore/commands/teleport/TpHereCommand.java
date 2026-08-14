@@ -57,12 +57,15 @@ public class TpHereCommand implements io.papermc.paper.command.brigadier.BasicCo
 
     @Override
     public java.util.Collection<String> suggest(io.papermc.paper.command.brigadier.CommandSourceStack stack, String[] args) {
+        if (!(stack.getSender() instanceof Player player)) {
+            return java.util.List.of();
+        }
         return args.length <= 1
                 ? java.util.stream.Stream.concat(
                         org.bcnlab.beaconlabscore.commands.CommandCompletion.players(
                                 org.bcnlab.beaconlabscore.commands.CommandCompletion.argument(args, 0)).stream(),
                         EntityTargetResolver.selectorSuggestions(
-                                org.bcnlab.beaconlabscore.commands.CommandCompletion.argument(args, 0)).stream())
+                                org.bcnlab.beaconlabscore.commands.CommandCompletion.argument(args, 0), player).stream())
                 .filter(value -> value.toLowerCase(java.util.Locale.ROOT).startsWith(
                         org.bcnlab.beaconlabscore.commands.CommandCompletion.argument(args, 0)
                                 .toLowerCase(java.util.Locale.ROOT)))

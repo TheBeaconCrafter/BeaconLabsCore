@@ -166,14 +166,14 @@ public class TpCommand implements io.papermc.paper.command.brigadier.BasicComman
         List<String> suggestions = new ArrayList<>();
         if (args.length <= 1) {
             suggestions.addAll(onlinePlayerNames());
-            suggestions.addAll(EntityTargetResolver.selectorSuggestions(partial));
+            suggestions.addAll(EntityTargetResolver.selectorSuggestions(partial, player));
             suggestions.addAll(coordinateValues(player.getLocation(), 0));
         } else if (args.length == 2) {
             List<Entity> targets = EntityTargetResolver.resolve(args[0], player);
             if (!targets.isEmpty()) {
                 // The second argument may be a destination player or the target's X coordinate.
                 suggestions.addAll(onlinePlayerNames());
-                suggestions.addAll(EntityTargetResolver.selectorSuggestions(partial));
+                suggestions.addAll(EntityTargetResolver.selectorSuggestions(partial, player));
                 suggestions.addAll(coordinateValues(targets.get(0).getLocation(), 0));
             } else {
                 suggestions.addAll(coordinateValues(player.getLocation(), 1));
