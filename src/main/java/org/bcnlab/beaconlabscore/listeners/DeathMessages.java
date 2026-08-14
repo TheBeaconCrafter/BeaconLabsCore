@@ -7,6 +7,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
+import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.entity.PlayerDeathEvent;
 
 public class DeathMessages implements Listener {
@@ -15,17 +16,18 @@ public class DeathMessages implements Listener {
 
     public DeathMessages(BeaconLabsCore plugin) {
         this.plugin = plugin;
-        plugin.getServer().getPluginManager().registerEvents(this, plugin);
     }
 
     @EventHandler
     public void onPlayerDeath(PlayerDeathEvent event) {
+        Player player = event.getEntity();
+        plugin.recordDeathLocation(player);
+
         if (!plugin.areDeathMessagesEnabled()) {
             event.deathMessage(null);
             return;
         }
 
-        Player player = event.getEntity();
         String deathMessage = null;
 
         // Check if the death was caused by another entity
@@ -40,9 +42,12 @@ public class DeathMessages implements Listener {
                 String message = plugin.getCustomDeathMessage();
                 deathMessage = formatMessage(message, player.getName(), lastDamageEvent.getDamager().getName());
             } else {
-                // Otherwise, use the cause of death
+                // Otherwise, use the cause of death. A death event may not always
+                // have a recorded damage cause (for example, plugin-triggered deaths).
                 String message = plugin.getCustomDeathMessage();
-                deathMessage = formatMessage(message, player.getName(), player.getLastDamageCause().getCause().name());
+                EntityDamageEvent cause = player.getLastDamageCause();
+                String causeName = cause == null ? "unknown" : cause.getCause().name();
+                deathMessage = formatMessage(message, player.getName(), causeName);
             }
         }
 

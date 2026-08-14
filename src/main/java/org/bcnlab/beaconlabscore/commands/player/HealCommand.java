@@ -1,15 +1,20 @@
 package org.bcnlab.beaconlabscore.commands.player;
 
+import io.papermc.paper.command.brigadier.BasicCommand;
+import io.papermc.paper.command.brigadier.CommandSourceStack;
 import org.bcnlab.beaconlabscore.BeaconLabsCore;
-import org.bukkit.Bukkit;
+import org.bcnlab.beaconlabscore.commands.CommandCompletion;
 import net.kyori.adventure.text.minimessage.MiniMessage;
-import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer;
-import org.bukkit.command.Command;
-import org.bukkit.command.CommandExecutor;
+import org.bukkit.Bukkit;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
+import org.jspecify.annotations.NullMarked;
 
-public class HealCommand implements CommandExecutor {
+import java.util.Collection;
+import java.util.List;
+
+@NullMarked
+public class HealCommand implements BasicCommand {
 
     private final BeaconLabsCore plugin;
 
@@ -18,62 +23,68 @@ public class HealCommand implements CommandExecutor {
     }
 
     @Override
-    public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
-        if (!(sender instanceof Player)) {
-            sender.sendMessage(plugin.getPrefix(sender).append(MiniMessage.miniMessage().deserialize("<gray>This command can only be used by players.")));
-            return true;
+    public void execute(CommandSourceStack stack, String[] args) {
+        CommandSender sender = stack.getSender();
+        if (!(sender instanceof Player player)) {
+            sender.sendMessage(plugin.getPrefix(sender).append(MiniMessage.miniMessage()
+                    .deserialize("<gray>This command can only be used by players.")));
+            return;
         }
-
-        Player player = (Player) sender;
 
         if (args.length > 0) {
             if (!sender.hasPermission("beaconlabs.core.heal.others")) {
-                sender.sendMessage(plugin.getPrefix(sender).append(MiniMessage.miniMessage().deserialize("<gray>You do not have permission to heal others.")));
-                return true;
+                sender.sendMessage(plugin.getPrefix(sender).append(MiniMessage.miniMessage()
+                        .deserialize("<gray>You do not have permission to heal others.")));
+                return;
             }
 
             Player target = Bukkit.getPlayer(args[0]);
             if (target == null) {
-                sender.sendMessage(plugin.getPrefix(sender).append(MiniMessage.miniMessage().deserialize("<gray>Player not found: " + args[0])));
-                return true;
+                sender.sendMessage(plugin.getPrefix(sender).append(MiniMessage.miniMessage()
+                        .deserialize("<gray>Player not found: " + args[0])));
+                return;
             }
 
-            boolean notify = true;
-            if (args.length > 1 && args[args.length - 1].equalsIgnoreCase("nonotify") || args.length > 1 && args[args.length - 1].equalsIgnoreCase("n")) {
-                notify = false;
-            }
-
-            healPlayer(target, notify);
-
-            if(notify) {
-                sender.sendMessage(plugin.getPrefix(sender).append(MiniMessage.miniMessage().deserialize("<gray>You healed " + target.getName() + ".")));
-            } else {
-                sender.sendMessage(plugin.getPrefix(sender).append(MiniMessage.miniMessage().deserialize("<gray>You healed " + target.getName() + " without notifying them.")));
-            }
-
+            boolean notify = args.length <= 1 || !(args[args.length - 1].equalsIgnoreCase("nonotify")
+                    || args[args.length - 1].equalsIgnoreCase("n"));
+            healPlayer(target);
+            sender.sendMessage(plugin.getPrefix(sender).append(MiniMessage.miniMessage().deserialize(
+                    "<gray>You healed " + target.getName() + (notify ? "." : " without notifying them."))));
             if (notify) {
-                target.sendMessage(plugin.getPrefix(target).append(MiniMessage.miniMessage().deserialize("<gray>You have been healed by " + player.getName() + ".")));
+                target.sendMessage(plugin.getPrefix(target).append(MiniMessage.miniMessage()
+                        .deserialize("<gray>You have been healed by " + player.getName() + ".")));
             }
-        } else {
-            if (!sender.hasPermission("beaconlabs.core.heal.self")) {
-                sender.sendMessage(plugin.getPrefix(sender).append(MiniMessage.miniMessage().deserialize("<gray>You do not have permission to heal yourself.")));
-                return true;
-            }
-
-            healPlayer(player, true);
-            player.sendMessage(plugin.getPrefix(player).append(MiniMessage.miniMessage().deserialize("<gray>You healed yourself.")));
+            return;
         }
 
-        return true;
+        if (!sender.hasPermission("beaconlabs.core.heal.self")) {
+            sender.sendMessage(plugin.getPrefix(sender).append(MiniMessage.miniMessage()
+                    .deserialize("<gray>You do not have permission to heal yourself.")));
+            return;
+        }
+
+        healPlayer(player);
+        player.sendMessage(plugin.getPrefix(player).append(MiniMessage.miniMessage()
+                .deserialize("<gray>You healed yourself.")));
     }
 
-    private void healPlayer(Player player, boolean notify) {
+    @Override
+    public Collection<String> suggest(CommandSourceStack stack, String[] args) {
+        if (args.length <= 1 && stack.getSender().hasPermission("beaconlabs.core.heal.others")) {
+            return CommandCompletion.players(CommandCompletion.argument(args, 0));
+        }
+        return List.of();
+    }
+
+    @Override
+    public boolean canUse(CommandSender sender) {
+        return sender.hasPermission("beaconlabs.core.heal.self")
+                || sender.hasPermission("beaconlabs.core.heal.others");
+    }
+
+    private void healPlayer(Player player) {
         player.setHealth(player.getMaxHealth());
         player.setFoodLevel(20);
         player.setFireTicks(0);
-
-        if (notify) {
-            player.sendMessage(plugin.getPrefix(player).append(MiniMessage.miniMessage().deserialize("<gray>You have been healed.")));
-        }
     }
 }

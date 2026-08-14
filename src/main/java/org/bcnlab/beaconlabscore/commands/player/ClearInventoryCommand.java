@@ -3,12 +3,10 @@ package org.bcnlab.beaconlabscore.commands.player;
 import org.bcnlab.beaconlabscore.BeaconLabsCore;
 import org.bukkit.Bukkit;
 import net.kyori.adventure.text.minimessage.MiniMessage;
-import org.bukkit.command.Command;
-import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
-public class ClearInventoryCommand implements CommandExecutor {
+public class ClearInventoryCommand implements io.papermc.paper.command.brigadier.BasicCommand {
 
     private final BeaconLabsCore plugin;
 
@@ -17,7 +15,8 @@ public class ClearInventoryCommand implements CommandExecutor {
     }
 
     @Override
-    public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
+    public void execute(io.papermc.paper.command.brigadier.CommandSourceStack stack, String[] args) {
+        CommandSender sender = stack.getSender();
         if (args.length == 0) {
             if (sender instanceof Player) {
                 Player player = (Player) sender;
@@ -30,7 +29,7 @@ public class ClearInventoryCommand implements CommandExecutor {
             } else {
                 sender.sendMessage(plugin.getPrefix(sender).append(MiniMessage.miniMessage().deserialize("<gray>Only players can clear their own inventory.")));
             }
-            return true;
+            return;
         } else if (args.length == 1) {
             if (sender.hasPermission("beaconlabs.core.clearinventory.others")) {
                 Player target = Bukkit.getPlayer(args[0]);
@@ -44,15 +43,27 @@ public class ClearInventoryCommand implements CommandExecutor {
             } else {
                 sender.sendMessage(plugin.getPrefix(sender).append(MiniMessage.miniMessage().deserialize("<gray>You do not have permission to clear other players' inventories.")));
             }
-            return true;
+            return;
         } else {
             sender.sendMessage(plugin.getPrefix(sender).append(MiniMessage.miniMessage().deserialize("<gray>Usage: /clearinv [player]")));
-            return false;
+            return;
         }
     }
 
     private void clearInventory(Player player) {
         player.getInventory().clear();
         player.getInventory().setArmorContents(null);
+    }
+
+    @Override
+    public java.util.Collection<String> suggest(io.papermc.paper.command.brigadier.CommandSourceStack stack, String[] args) {
+        return args.length <= 1 ? org.bcnlab.beaconlabscore.commands.CommandCompletion.players(
+                org.bcnlab.beaconlabscore.commands.CommandCompletion.argument(args, 0)) : java.util.List.of();
+    }
+
+    @Override
+    public boolean canUse(CommandSender sender) {
+        return sender.hasPermission("beaconlabs.core.clearinventory.self")
+                || sender.hasPermission("beaconlabs.core.clearinventory.others");
     }
 }

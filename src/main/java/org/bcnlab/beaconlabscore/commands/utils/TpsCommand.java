@@ -4,13 +4,11 @@ import org.bcnlab.beaconlabscore.BeaconLabsCore;
 import net.kyori.adventure.text.minimessage.MiniMessage;
 import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer;
 import org.bukkit.Bukkit;
-import org.bukkit.command.Command;
-import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 
-public class TpsCommand implements CommandExecutor {
+public class TpsCommand implements io.papermc.paper.command.brigadier.BasicCommand {
 
     private final BeaconLabsCore plugin;
 
@@ -19,12 +17,13 @@ public class TpsCommand implements CommandExecutor {
     }
 
     @Override
-    public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
+    public void execute(io.papermc.paper.command.brigadier.CommandSourceStack stack, String[] args) {
+        CommandSender sender = stack.getSender();
         if (sender instanceof Player) {
             Player player = (Player) sender;
             if (!player.hasPermission("beaconlabs.core.stats")) {
                 player.sendMessage(plugin.getPrefix(player).append(MiniMessage.miniMessage().deserialize("<gray>You do not have permission to use this command.")));
-                return true;
+                return;
             }
         }
 
@@ -58,6 +57,16 @@ public class TpsCommand implements CommandExecutor {
         );
 
         sender.sendMessage(plugin.getPrefix(sender).append(MiniMessage.miniMessage().deserialize(message)));
-        return true;
+        return;
+    }
+
+    @Override
+    public java.util.Collection<String> suggest(io.papermc.paper.command.brigadier.CommandSourceStack stack, String[] args) {
+        return java.util.List.of();
+    }
+
+    @Override
+    public boolean canUse(CommandSender sender) {
+        return sender.hasPermission("beaconlabs.core.stats");
     }
 }

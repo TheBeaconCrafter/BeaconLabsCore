@@ -7,10 +7,7 @@ import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer;
 import org.bukkit.Material;
 import org.bukkit.NamespacedKey;
 import org.bukkit.Registry;
-import org.bukkit.command.Command;
-import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
-import org.bukkit.command.TabCompleter;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
@@ -25,7 +22,7 @@ import java.util.stream.Collectors;
 /**
  * Command to enchant items with any level up to 255
  */
-public class EnchantCommand implements CommandExecutor, TabCompleter {
+public class EnchantCommand implements io.papermc.paper.command.brigadier.BasicCommand {
 
     private final BeaconLabsCore plugin;
 
@@ -34,16 +31,17 @@ public class EnchantCommand implements CommandExecutor, TabCompleter {
     }
 
     @Override
-    public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
+    public void execute(io.papermc.paper.command.brigadier.CommandSourceStack stack, String[] args) {
+        CommandSender sender = stack.getSender();
         if (!sender.hasPermission("beaconlabs.core.enchant")) {
             sender.sendMessage(plugin.getPrefix(sender).append(LegacyComponentSerializer.legacyAmpersand().deserialize(plugin.getNoPermsMessage())));
-            return true;
+            return;
         }
 
         // Check if args length is correct
         if (args.length < 2) {
             sender.sendMessage(plugin.getPrefix(sender).append(MiniMessage.miniMessage().deserialize("<gray>Usage: /ench [player] <enchantment> <level>")));
-            return true;
+            return;
         }
 
         Player target;
@@ -59,7 +57,7 @@ public class EnchantCommand implements CommandExecutor, TabCompleter {
                 level = Integer.parseInt(args[2]);
             } catch (NumberFormatException e) {
                 sender.sendMessage(plugin.getPrefix(sender).append(MiniMessage.miniMessage().deserialize("<gray>Level must be a number between 1 and 255.")));
-                return true;
+                return;
             }
         } else if (sender instanceof Player) {
             // Format: /ench <enchantment> <level>
@@ -69,31 +67,31 @@ public class EnchantCommand implements CommandExecutor, TabCompleter {
                 level = Integer.parseInt(args[1]);
             } catch (NumberFormatException e) {
                 sender.sendMessage(plugin.getPrefix(sender).append(MiniMessage.miniMessage().deserialize("<gray>Level must be a number between 1 and 255.")));
-                return true;
+                return;
             }
         } else {
             sender.sendMessage(plugin.getPrefix(sender).append(MiniMessage.miniMessage().deserialize("<gray>Console must specify a player: /ench <player> <enchantment> <level>")));
-            return true;
+            return;
         }
 
         // Validate level
         if (level < 1 || level > 255) {
             sender.sendMessage(plugin.getPrefix(sender).append(MiniMessage.miniMessage().deserialize("<gray>Level must be between 1 and 255.")));
-            return true;
+            return;
         }
 
         // Get the enchantment
         Enchantment enchantment = getEnchantmentByName(enchantmentName);
         if (enchantment == null) {
             sender.sendMessage(plugin.getPrefix(sender).append(MiniMessage.miniMessage().deserialize("<gray>Unknown enchantment: " + enchantmentName)));
-            return true;
+            return;
         }
 
         // Get the item in hand
         ItemStack item = target.getInventory().getItemInMainHand();
         if (item == null || item.getType() == Material.AIR) {
             sender.sendMessage(plugin.getPrefix(sender).append(MiniMessage.miniMessage().deserialize("<gray>The player must be holding an item.")));
-            return true;
+            return;
         }
 
         // Handle enchanted books differently
@@ -105,7 +103,7 @@ public class EnchantCommand implements CommandExecutor, TabCompleter {
             // Check if the enchantment can be applied to the item
             if (!enchantment.canEnchantItem(item) && !sender.hasPermission("beaconlabs.core.enchant.bypass")) {
                 sender.sendMessage(plugin.getPrefix(sender).append(MiniMessage.miniMessage().deserialize("<gray>This enchantment cannot be applied to this item.")));
-                return true;
+                return;
             }
 
             // Add the enchantment
@@ -123,27 +121,30 @@ public class EnchantCommand implements CommandExecutor, TabCompleter {
                 formatEnchantmentName(enchantment.getKey().getKey()) + " " + level + " to your " + formatItemName(item.getType().name()) + ".")));
         }
 
-        return true;
+        return;
     }
 
     @Override
-    public List<String> onTabComplete(CommandSender sender, Command command, String alias, String[] args) {
+    public List<String> suggest(io.papermc.paper.command.brigadier.CommandSourceStack stack, String[] args) {
+        CommandSender sender = stack.getSender();
         List<String> completions = new ArrayList<>();
 
         if (!sender.hasPermission("beaconlabs.core.enchant")) {
             return completions;
         }
 
-        if (args.length == 1) {
+        if (args.length <= 1) {
             // First argument could be player name or enchantment
+            String partial = org.bcnlab.beaconlabscore.commands.CommandCompletion
+                    .argument(args, 0).toLowerCase();
             for (Player player : Bukkit.getOnlinePlayers()) {
-                if (player.getName().toLowerCase().startsWith(args[0].toLowerCase())) {
+                if (player.getName().toLowerCase().startsWith(partial)) {
                     completions.add(player.getName());
                 }
             }            // Also add enchantment names
             for (Enchantment enchantment : Enchantment.values()) {
                 String enchName = enchantment.getKey().getKey();
-                if (enchName.toLowerCase().startsWith(args[0].toLowerCase())) {
+                if (enchName.toLowerCase().startsWith(partial)) {
                     completions.add(enchName);
                 }
             }
@@ -212,5 +213,10 @@ public class EnchantCommand implements CommandExecutor, TabCompleter {
         return Arrays.stream(itemName.split("_"))
                 .map(word -> word.substring(0, 1).toUpperCase() + word.substring(1).toLowerCase())
                 .collect(Collectors.joining(" "));
+    }
+
+    @Override
+    public boolean canUse(CommandSender sender) {
+        return sender.hasPermission("beaconlabs.core.enchant");
     }
 }

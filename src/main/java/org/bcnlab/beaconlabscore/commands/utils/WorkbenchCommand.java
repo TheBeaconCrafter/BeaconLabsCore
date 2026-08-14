@@ -3,12 +3,10 @@ package org.bcnlab.beaconlabscore.commands.utils;
 import org.bcnlab.beaconlabscore.BeaconLabsCore;
 import net.kyori.adventure.text.minimessage.MiniMessage;
 import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer;
-import org.bukkit.command.Command;
-import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
-public class WorkbenchCommand implements CommandExecutor {
+public class WorkbenchCommand implements io.papermc.paper.command.brigadier.BasicCommand {
 
     private final BeaconLabsCore plugin;
 
@@ -17,20 +15,31 @@ public class WorkbenchCommand implements CommandExecutor {
     }
 
     @Override
-    public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
+    public void execute(io.papermc.paper.command.brigadier.CommandSourceStack stack, String[] args) {
+        CommandSender sender = stack.getSender();
         if (!(sender instanceof Player)) {
             sender.sendMessage(plugin.getPrefix(sender).append(MiniMessage.miniMessage().deserialize("<gray>This command can only be used by players.")));
-            return true;
+            return;
         }
 
         Player player = (Player) sender;
 
         if (!sender.hasPermission("beaconlabs.core.workbench")) {
             sender.sendMessage(plugin.getPrefix(sender).append(MiniMessage.miniMessage().deserialize("<gray>You do not have permission to use this command.")));
-            return true;
+            return;
         }
 
         player.openWorkbench(null, true);
-        return true;
+        return;
+    }
+
+    @Override
+    public java.util.Collection<String> suggest(io.papermc.paper.command.brigadier.CommandSourceStack stack, String[] args) {
+        return java.util.List.of();
+    }
+
+    @Override
+    public boolean canUse(CommandSender sender) {
+        return sender.hasPermission("beaconlabs.core.workbench");
     }
 }

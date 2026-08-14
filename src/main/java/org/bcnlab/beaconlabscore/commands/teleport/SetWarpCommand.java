@@ -4,12 +4,10 @@ import org.bcnlab.beaconlabscore.BeaconLabsCore;
 import org.bcnlab.beaconlabscore.utils.WarpManager;
 import net.kyori.adventure.text.minimessage.MiniMessage;
 import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer;
-import org.bukkit.command.Command;
-import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
-public class SetWarpCommand implements CommandExecutor {
+public class SetWarpCommand implements io.papermc.paper.command.brigadier.BasicCommand {
     
     private final BeaconLabsCore plugin;
     private final WarpManager warpManager;
@@ -20,22 +18,23 @@ public class SetWarpCommand implements CommandExecutor {
     }
     
     @Override
-    public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
+    public void execute(io.papermc.paper.command.brigadier.CommandSourceStack stack, String[] args) {
+        CommandSender sender = stack.getSender();
         if (!(sender instanceof Player)) {
             sender.sendMessage(plugin.getPrefix(sender).append(MiniMessage.miniMessage().deserialize("<gray>This command can only be used by players.")));
-            return true;
+            return;
         }
         
         Player player = (Player) sender;
         
         if (!player.hasPermission("beaconlabs.core.setwarp")) {
             player.sendMessage(plugin.getPrefix(player).append(LegacyComponentSerializer.legacyAmpersand().deserialize(plugin.getNoPermsMessage())));
-            return true;
+            return;
         }
         
         if (args.length < 1) {
             player.sendMessage(plugin.getPrefix(player).append(MiniMessage.miniMessage().deserialize("<gray>Usage: /setwarp <name>")));
-            return true;
+            return;
         }
         
         String warpName = args[0];
@@ -43,12 +42,12 @@ public class SetWarpCommand implements CommandExecutor {
         // Validate warp name (alphanumeric and underscore only)
         if (!warpName.matches("^[a-zA-Z0-9_]+$")) {
             player.sendMessage(plugin.getPrefix(player).append(MiniMessage.miniMessage().deserialize("<gray>Warp names can only contain letters, numbers, and underscores.")));
-            return true;
+            return;
         }
         
         if (warpManager.warpExists(warpName)) {
             player.sendMessage(plugin.getPrefix(player).append(MiniMessage.miniMessage().deserialize("<gray>A warp with that name already exists! Use /delwarp first if you want to replace it.")));
-            return true;
+            return;
         }
         
         boolean success = warpManager.createWarp(warpName, player.getLocation());
@@ -59,6 +58,16 @@ public class SetWarpCommand implements CommandExecutor {
             player.sendMessage(plugin.getPrefix(player).append(MiniMessage.miniMessage().deserialize("<gray>Failed to create warp '" + warpName + "'.")));
         }
         
-        return true;
+        return;
+    }
+
+    @Override
+    public java.util.Collection<String> suggest(io.papermc.paper.command.brigadier.CommandSourceStack stack, String[] args) {
+        return java.util.List.of();
+    }
+
+    @Override
+    public boolean canUse(CommandSender sender) {
+        return sender.hasPermission("beaconlabs.core.setwarp");
     }
 }

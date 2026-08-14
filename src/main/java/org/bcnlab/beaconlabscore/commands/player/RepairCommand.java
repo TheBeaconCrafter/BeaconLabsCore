@@ -5,10 +5,7 @@ import org.bukkit.Bukkit;
 import net.kyori.adventure.text.minimessage.MiniMessage;
 import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer;
 import org.bukkit.Material;
-import org.bukkit.command.Command;
-import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
-import org.bukkit.command.TabCompleter;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.Damageable;
@@ -20,7 +17,7 @@ import java.util.List;
 /**
  * Command to repair the currently held item
  */
-public class RepairCommand implements CommandExecutor, TabCompleter {
+public class RepairCommand implements io.papermc.paper.command.brigadier.BasicCommand {
 
     private final BeaconLabsCore plugin;
 
@@ -29,10 +26,11 @@ public class RepairCommand implements CommandExecutor, TabCompleter {
     }
 
     @Override
-    public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
+    public void execute(io.papermc.paper.command.brigadier.CommandSourceStack stack, String[] args) {
+        CommandSender sender = stack.getSender();
         if (!sender.hasPermission("beaconlabs.core.repair")) {
             sender.sendMessage(plugin.getPrefix(sender).append(LegacyComponentSerializer.legacyAmpersand().deserialize(plugin.getNoPermsMessage())));
-            return true;
+            return;
         }
 
         Player target;
@@ -41,34 +39,34 @@ public class RepairCommand implements CommandExecutor, TabCompleter {
             // Command used as: /repair <player>
             if (!sender.hasPermission("beaconlabs.core.repair.others")) {
                 sender.sendMessage(plugin.getPrefix(sender).append(MiniMessage.miniMessage().deserialize("<gray>You don't have permission to repair other players' items.")));
-                return true;
+                return;
             }
 
             target = Bukkit.getPlayer(args[0]);
             if (target == null) {
                 sender.sendMessage(plugin.getPrefix(sender).append(MiniMessage.miniMessage().deserialize("<gray>Player '" + args[0] + "' not found or is not online.")));
-                return true;
+                return;
             }
         } else if (sender instanceof Player) {
             // Command used as: /repair
             target = (Player) sender;
         } else {
             sender.sendMessage(plugin.getPrefix(sender).append(MiniMessage.miniMessage().deserialize("<gray>Console must specify a player: /repair <player>")));
-            return true;
+            return;
         }
 
         ItemStack item = target.getInventory().getItemInMainHand();
         
         if (item == null || item.getType() == Material.AIR) {
             sender.sendMessage(plugin.getPrefix(sender).append(MiniMessage.miniMessage().deserialize("<gray>" + (sender == target ? "You are" : target.getName() + " is") + " not holding any item.")));
-            return true;
+            return;
         }
         
         // Check if the item can be damaged
         ItemMeta meta = item.getItemMeta();
         if (!(meta instanceof Damageable)) {
             sender.sendMessage(plugin.getPrefix(sender).append(MiniMessage.miniMessage().deserialize("<gray>This item cannot be repaired.")));
-            return true;
+            return;
         }
         
         Damageable damageable = (Damageable) meta;
@@ -76,7 +74,7 @@ public class RepairCommand implements CommandExecutor, TabCompleter {
         // Check if the item is already at full durability
         if (!damageable.hasDamage()) {
             sender.sendMessage(plugin.getPrefix(sender).append(MiniMessage.miniMessage().deserialize("<gray>This item is already at full durability.")));
-            return true;
+            return;
         }
         
         damageable.setDamage(0);
@@ -91,19 +89,21 @@ public class RepairCommand implements CommandExecutor, TabCompleter {
             sender.sendMessage(plugin.getPrefix(sender).append(MiniMessage.miniMessage().deserialize("<gray>You repaired your " + itemName + ".")));
         }
         
-        return true;
+        return;
     }
 
     @Override
-    public List<String> onTabComplete(CommandSender sender, Command command, String alias, String[] args) {
+    public List<String> suggest(io.papermc.paper.command.brigadier.CommandSourceStack stack, String[] args) {
+        CommandSender sender = stack.getSender();
         List<String> completions = new ArrayList<>();
         
         if (!sender.hasPermission("beaconlabs.core.repair")) {
             return completions;
         }
         
-        if (args.length == 1 && sender.hasPermission("beaconlabs.core.repair.others")) {
-            String partialName = args[0].toLowerCase();
+        if (args.length <= 1 && sender.hasPermission("beaconlabs.core.repair.others")) {
+            String partialName = org.bcnlab.beaconlabscore.commands.CommandCompletion
+                    .argument(args, 0).toLowerCase();
             for (Player player : Bukkit.getOnlinePlayers()) {
                 if (player.getName().toLowerCase().startsWith(partialName)) {
                     completions.add(player.getName());
@@ -136,5 +136,10 @@ public class RepairCommand implements CommandExecutor, TabCompleter {
         }
         
         return titleCase.toString();
+    }
+
+    @Override
+    public boolean canUse(CommandSender sender) {
+        return sender.hasPermission("beaconlabs.core.repair");
     }
 }

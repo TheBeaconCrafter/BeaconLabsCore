@@ -3,92 +3,105 @@ package org.bcnlab.beaconlabscore.commands.teleport;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.minimessage.MiniMessage;
 import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer;
+import org.bcnlab.beaconlabscore.BeaconLabsCore;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.World;
-import org.bukkit.command.Command;
-import org.bukkit.command.CommandExecutor;
+import org.bukkit.block.Block;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
-import java.util.Random;
+import java.util.concurrent.ThreadLocalRandom;
 
-public class RandomTeleportCommand implements CommandExecutor {
+/** Teleports a player to a random safe surface location in their current world. */
+public class RandomTeleportCommand implements io.papermc.paper.command.brigadier.BasicCommand {
 
     private final Component pluginPrefix;
-    private final int maxRange; // Maximum range for teleportation (e.g., 5000 blocks)
-    private final int minHeight = 64; // Minimum height to start checking for safe locations
-    private final int maxHeight = 256; // Maximum height to check for safe locations
+    private final int maxRange;
 
     public RandomTeleportCommand(String pluginPrefix, int maxRange) {
         this.pluginPrefix = LegacyComponentSerializer.legacyAmpersand().deserialize(pluginPrefix);
-        this.maxRange = maxRange;
+        this.maxRange = Math.max(1, maxRange);
     }
 
     @Override
-    public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
-        if (!(sender instanceof Player)) {
-            sender.sendMessage(pluginPrefix.append(MiniMessage.miniMessage().deserialize("<gray>This command can only be used by players.")));
-            return true;
+    public void execute(io.papermc.paper.command.brigadier.CommandSourceStack stack, String[] args) {
+        CommandSender sender = stack.getSender();
+        if (!(sender instanceof Player player)) {
+            sender.sendMessage(pluginPrefix.append(MiniMessage.miniMessage()
+                    .deserialize("<gray>This command can only be used by players.")));
+            return;
         }
-
-        Player player = (Player) sender;
-
 
         if (!sender.hasPermission("beaconlabs.core.rtp")) {
-            sender.sendMessage(pluginPrefix.append(MiniMessage.miniMessage().deserialize("<gray>You do not have permission to use this command.")));
-            return true;
+            sender.sendMessage(pluginPrefix.append(MiniMessage.miniMessage()
+                    .deserialize("<gray>You do not have permission to use this command.")));
+            return;
         }
 
-        Location randomLocation = getRandomSafeLocation(player.getWorld(), maxRange); //IMPORTANT NOTE: THIS HAS TO BE GENERATED AFTER PERMISSION DENYING
-
-        if (randomLocation != null) {
-            player.teleport(randomLocation);
-            player.sendMessage(pluginPrefix.append(MiniMessage.miniMessage().deserialize("<gray>Teleported to a random location: " +
-                    "X: " + randomLocation.getBlockX() +
-                    " Y: " + randomLocation.getBlockY() +
-                    " Z: " + randomLocation.getBlockZ())));
-        } else {
-            player.sendMessage(pluginPrefix.append(MiniMessage.miniMessage().deserialize("<gray>Failed to find a safe location to teleport.")));
+        Location randomLocation = getRandomSafeLocation(player.getWorld(), maxRange);
+        if (randomLocation == null) {
+            player.sendMessage(pluginPrefix.append(MiniMessage.miniMessage()
+                    .deserialize("<gray>Failed to find a safe location to teleport.")));
+            return;
         }
 
-        return true;
+        player.teleport(randomLocation);
+        player.sendMessage(pluginPrefix.append(MiniMessage.miniMessage().deserialize(
+                "<gray>Teleported to a random location: X: " + randomLocation.getBlockX()
+                        + " Y: " + randomLocation.getBlockY()
+                        + " Z: " + randomLocation.getBlockZ())));
+        return;
+    }
+
+    @Override
+    public java.util.Collection<String> suggest(io.papermc.paper.command.brigadier.CommandSourceStack stack, String[] args) {
+        return java.util.List.of();
+    }
+
+    @Override
+    public boolean canUse(CommandSender sender) {
+        return sender.hasPermission("beaconlabs.core.rtp");
     }
 
     private Location getRandomSafeLocation(World world, int range) {
-        Random random = new Random();
-        Location randomLocation = null;
-
-        for (int i = 0; i < 10; i++) { // Try up to 10 times to find a safe location
-            int x = random.nextInt(range * 2) - range;
-            int z = random.nextInt(range * 2) - range;
-            int y = getSafeY(world, x, z);
-
+        ThreadLocalRandom random = ThreadLocalRandom.current();
+        for (int attempt = 0; attempt < 10; attempt++) {
+            int x = random.nextInt(-range, range + 1);
+            int z = random.nextInt(-range, range + 1);
+            int y = findSafeY(world, x, z);
             if (y != -1) {
-                randomLocation = new Location(world, x, y, z);
-                break;
+                return new Location(world, x + 0.5, y, z + 0.5);
             }
         }
-
-        return randomLocation;
+        return null;
     }
 
-    private int getSafeY(World world, int x, int z) {
-        for (int y = minHeight; y < maxHeight; y++) {
-            Location location = new Location(world, x, y, z);
-            if (isSafeLocation(location)) {
+    /** Checks the terrain surface and a small underground window instead of every Y level. */
+    private int findSafeY(World world, int x, int z) {
+        int highest = Math.min(world.getMaxHeight() - 2, world.getHighestBlockYAt(x, z));
+        int lowest = Math.max(world.getMinHeight() + 1, highest - 16);
+        for (int y = highest; y >= lowest; y--) {
+            Block feet = world.getBlockAt(x, y, z);
+            Block head = world.getBlockAt(x, y + 1, z);
+            Block ground = world.getBlockAt(x, y - 1, z);
+            if (isSafeLocation(feet, head, ground)) {
                 return y;
             }
         }
         return -1;
     }
 
-    private boolean isSafeLocation(Location location) {
-        Material feetBlock = location.getBlock().getType();
-        Material headBlock = location.clone().add(0, 1, 0).getBlock().getType();
-        Material groundBlock = location.clone().subtract(0, 1, 0).getBlock().getType();
-
-        // Check if the feet and head locations are air and the block beneath is solid
-        return feetBlock == Material.AIR && headBlock == Material.AIR && groundBlock.isSolid() && groundBlock != Material.LAVA;
+    private boolean isSafeLocation(Block feet, Block head, Block ground) {
+        Material groundType = ground.getType();
+        return feet.isPassable()
+                && head.isPassable()
+                && groundType.isSolid()
+                && !ground.isLiquid()
+                && groundType != Material.MAGMA_BLOCK
+                && groundType != Material.CACTUS
+                && groundType != Material.CAMPFIRE
+                && groundType != Material.SOUL_CAMPFIRE
+                && groundType != Material.POWDER_SNOW;
     }
 }

@@ -12,8 +12,9 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.Collections;
 import java.util.HashMap;
-import java.util.HashSet;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
 
@@ -29,8 +30,8 @@ public class WarpManager {
         this.warpLocations = new HashMap<>();
         
         // Create plugin directory if it doesn't exist
-        if (!plugin.getDataFolder().exists()) {
-            plugin.getDataFolder().mkdir();
+        if (!plugin.getDataFolder().exists() && !plugin.getDataFolder().mkdirs()) {
+            plugin.getLogger().warning("Could not create the plugin data directory for warp storage.");
         }
         
         // Initialize the database
@@ -62,13 +63,14 @@ public class WarpManager {
                 );
             }
         } catch (ClassNotFoundException | SQLException e) {
-            plugin.getLogger().severe("Failed to initialize SQLite database for warps!");
-            e.printStackTrace();
+            plugin.getLogger().log(java.util.logging.Level.SEVERE,
+                    "Failed to initialize SQLite database for warps!", e);
         }
     }
 
     private void loadWarps() {
         warpLocations.clear();
+        if (connection == null) return;
         
         try (Statement statement = connection.createStatement();
              ResultSet resultSet = statement.executeQuery("SELECT * FROM warps")) {
@@ -90,16 +92,18 @@ public class WarpManager {
                 float pitch = resultSet.getFloat("pitch");
                 
                 Location location = new Location(world, x, y, z, yaw, pitch);
-                warpLocations.put(warpName.toLowerCase(), location);
+                warpLocations.put(warpName.toLowerCase(Locale.ROOT), location);
             }
         } catch (SQLException e) {
-            plugin.getLogger().severe("Failed to load warps from database!");
-            e.printStackTrace();
+            plugin.getLogger().log(java.util.logging.Level.SEVERE, "Failed to load warps from database!", e);
         }
     }
 
     public boolean createWarp(String name, Location location) {
-        String lowerName = name.toLowerCase();
+        if (connection == null || name == null || name.isBlank() || location == null || location.getWorld() == null) {
+            return false;
+        }
+        String lowerName = name.toLowerCase(Locale.ROOT);
         if (warpExists(lowerName)) {
             return false;
         }
@@ -115,17 +119,18 @@ public class WarpManager {
             statement.setFloat(7, location.getPitch());
             
             statement.executeUpdate();
-            warpLocations.put(lowerName, location);
+            warpLocations.put(lowerName, location.clone());
             return true;
         } catch (SQLException e) {
-            plugin.getLogger().severe("Failed to create warp '" + name + "' in database!");
-            e.printStackTrace();
+            plugin.getLogger().log(java.util.logging.Level.SEVERE,
+                    "Failed to create warp '" + name + "' in database!", e);
             return false;
         }
     }
 
     public boolean deleteWarp(String name) {
-        String lowerName = name.toLowerCase();
+        if (connection == null || name == null || name.isBlank()) return false;
+        String lowerName = name.toLowerCase(Locale.ROOT);
         if (!warpExists(lowerName)) {
             return false;
         }
@@ -136,22 +141,24 @@ public class WarpManager {
             warpLocations.remove(lowerName);
             return true;
         } catch (SQLException e) {
-            plugin.getLogger().severe("Failed to delete warp '" + name + "' from database!");
-            e.printStackTrace();
+            plugin.getLogger().log(java.util.logging.Level.SEVERE,
+                    "Failed to delete warp '" + name + "' from database!", e);
             return false;
         }
     }
 
     public Location getWarp(String name) {
-        return warpLocations.get(name.toLowerCase());
+        if (name == null) return null;
+        Location location = warpLocations.get(name.toLowerCase(Locale.ROOT));
+        return location == null ? null : location.clone();
     }
 
     public boolean warpExists(String name) {
-        return warpLocations.containsKey(name.toLowerCase());
+        return name != null && warpLocations.containsKey(name.toLowerCase(Locale.ROOT));
     }
 
     public Set<String> getWarpNames() {
-        return warpLocations.keySet();
+        return Collections.unmodifiableSet(Set.copyOf(warpLocations.keySet()));
     }
     
     public void closeConnection() {
@@ -160,8 +167,8 @@ public class WarpManager {
                 connection.close();
             }
         } catch (SQLException e) {
-            plugin.getLogger().severe("Failed to close SQLite database connection!");
-            e.printStackTrace();
+            plugin.getLogger().log(java.util.logging.Level.WARNING,
+                    "Failed to close SQLite database connection!", e);
         }
     }
 }

@@ -5,12 +5,10 @@ import org.bukkit.Bukkit;
 import net.kyori.adventure.text.minimessage.MiniMessage;
 import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer;
 import org.bukkit.GameMode;
-import org.bukkit.command.Command;
-import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
-public class GamemodeCommand implements CommandExecutor {
+public class GamemodeCommand implements io.papermc.paper.command.brigadier.BasicCommand {
 
     private final BeaconLabsCore plugin;
 
@@ -19,17 +17,18 @@ public class GamemodeCommand implements CommandExecutor {
     }
 
     @Override
-    public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
+    public void execute(io.papermc.paper.command.brigadier.CommandSourceStack stack, String[] args) {
+        CommandSender sender = stack.getSender();
         if (!(sender instanceof Player)) {
             sender.sendMessage(plugin.getPrefix(sender).append(MiniMessage.miniMessage().deserialize("<gray>This command can only be used by players.")));
-            return true;
+            return;
         }
 
         Player player = (Player) sender;
 
         if (args.length == 0) {
             sender.sendMessage(plugin.getPrefix(sender).append(MiniMessage.miniMessage().deserialize("<gray>Usage: /gamemode <mode> [player] [nonotify]")));
-            return true;
+            return;
         }
 
         GameMode gameMode;
@@ -37,47 +36,62 @@ public class GamemodeCommand implements CommandExecutor {
             gameMode = parseGameMode(args[0]);
         } catch (IllegalArgumentException e) {
             sender.sendMessage(plugin.getPrefix(sender).append(MiniMessage.miniMessage().deserialize("<gray>Invalid game mode: " + args[0])));
-            return true;
+            return;
         }
 
         if (args.length == 1) {
             if (!sender.hasPermission("beaconlabs.core.gamemode.self")) {
                 sender.sendMessage(plugin.getPrefix(sender).append(MiniMessage.miniMessage().deserialize("<gray>You do not have permission to change your game mode.")));
-                return true;
+                return;
             }
 
             setGameMode(player, gameMode);
-            sender.sendMessage(plugin.getPrefix(sender).append(MiniMessage.miniMessage().deserialize("<gray>Your game mode has been changed to " + gameMode.toString().toLowerCase() + ".")));
+            sender.sendMessage(plugin.getPrefix(sender).append(MiniMessage.miniMessage().deserialize(
+                    "<gray>Your game mode has been changed to <gold>" + gameMode.toString().toLowerCase()
+                            + "<gray>.")));
         } else if (args.length >= 2) {
             boolean notify = true;
             String playerName = args[1];
 
-            if (args.length > 2 && args[2].equalsIgnoreCase("nonotify") || args.length > 2 && args[2].equalsIgnoreCase("n")) {
+            if (args.length > 3) {
+                sender.sendMessage(plugin.getPrefix(sender).append(MiniMessage.miniMessage()
+                        .deserialize("<gray>Usage: /gamemode <mode> [player] [nonotify]")));
+                return;
+            }
+            if (args.length > 2 && (args[2].equalsIgnoreCase("nonotify")
+                    || args[2].equalsIgnoreCase("n"))) {
                 notify = false;
             }
 
             if (!sender.hasPermission("beaconlabs.core.gamemode.others")) {
                 sender.sendMessage(plugin.getPrefix(sender).append(MiniMessage.miniMessage().deserialize("<gray>You do not have permission to change other players' game modes.")));
-                return true;
+                return;
             }
 
-            Player target = Bukkit.getPlayer(playerName);
+            Player target = Bukkit.getPlayerExact(playerName);
+            if (target == null) target = Bukkit.getPlayer(playerName);
             if (target == null) {
                 sender.sendMessage(plugin.getPrefix(sender).append(MiniMessage.miniMessage().deserialize("<gray>Player not found: " + playerName + ".")));
-                return true;
+                return;
             }
 
             setGameMode(target, gameMode);
 
             if (notify) {
-                sender.sendMessage(plugin.getPrefix(sender).append(MiniMessage.miniMessage().deserialize("<gray>Changed game mode of " + target.getName() + " to " + gameMode.toString().toLowerCase() + ".")));
-                target.sendMessage(plugin.getPrefix(target).append(MiniMessage.miniMessage().deserialize("<gray>Your game mode has been changed to " + gameMode.toString().toLowerCase() + " by " + player.getName() + ".")));
+                sender.sendMessage(plugin.getPrefix(sender).append(MiniMessage.miniMessage().deserialize(
+                        "<gray>Changed game mode of " + target.getName() + " to <gold>"
+                                + gameMode.toString().toLowerCase() + "<gray>.")));
+                target.sendMessage(plugin.getPrefix(target).append(MiniMessage.miniMessage().deserialize(
+                        "<gray>Your game mode has been changed to <gold>" + gameMode.toString().toLowerCase()
+                                + "<gray> by " + player.getName() + ".")));
             } else {
-                sender.sendMessage(plugin.getPrefix(sender).append(MiniMessage.miniMessage().deserialize("<gray>Changed game mode of " + target.getName() + " to " + gameMode.toString().toLowerCase() + " without notification.")));
+                sender.sendMessage(plugin.getPrefix(sender).append(MiniMessage.miniMessage().deserialize(
+                        "<gray>Changed game mode of " + target.getName() + " to <gold>"
+                                + gameMode.toString().toLowerCase() + "<gray> without notification.")));
             }
         }
 
-        return true;
+        return;
     }
 
     private GameMode parseGameMode(String mode) {
@@ -105,5 +119,30 @@ public class GamemodeCommand implements CommandExecutor {
 
     private void setGameMode(Player player, GameMode gameMode) {
         player.setGameMode(gameMode);
+    }
+
+    @Override
+    public java.util.Collection<String> suggest(io.papermc.paper.command.brigadier.CommandSourceStack stack, String[] args) {
+        if (args.length <= 1) {
+            return org.bcnlab.beaconlabscore.commands.CommandCompletion.filter(
+                    java.util.List.of("survival", "creative", "adventure", "spectator", "0", "1", "2", "3"),
+                    org.bcnlab.beaconlabscore.commands.CommandCompletion.argument(args, 0));
+        }
+        if (args.length == 2) {
+            return org.bcnlab.beaconlabscore.commands.CommandCompletion.players(
+                    org.bcnlab.beaconlabscore.commands.CommandCompletion.argument(args, 1));
+        }
+        if (args.length == 3) {
+            return org.bcnlab.beaconlabscore.commands.CommandCompletion.filter(
+                    java.util.List.of("notify", "nonotify", "n"),
+                    org.bcnlab.beaconlabscore.commands.CommandCompletion.argument(args, 2));
+        }
+        return java.util.List.of();
+    }
+
+    @Override
+    public boolean canUse(CommandSender sender) {
+        return sender.hasPermission("beaconlabs.core.gamemode.self")
+                || sender.hasPermission("beaconlabs.core.gamemode.others");
     }
 }

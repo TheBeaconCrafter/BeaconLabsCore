@@ -20,17 +20,19 @@ import org.bcnlab.beaconlabscore.utils.WarpManager;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.minimessage.MiniMessage;
 import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer;
-import org.bukkit.GameMode;
+import org.bukkit.Location;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.AsyncPlayerChatEvent;
 import org.bukkit.plugin.java.JavaPlugin;
-import org.bukkit.command.TabCompleter;
-import io.papermc.paper.command.brigadier.Commands;
 import io.papermc.paper.command.brigadier.CommandSourceStack;
 import io.papermc.paper.plugin.lifecycle.event.types.LifecycleEvents;
+
+import java.util.HashMap;
+import java.util.Map;
+import java.util.UUID;
 
 public final class BeaconLabsCore extends JavaPlugin implements Listener {
 
@@ -41,7 +43,17 @@ public final class BeaconLabsCore extends JavaPlugin implements Listener {
     private ChatFormatter chatFormatter;
     private org.bcnlab.beaconlabscore.listeners.NametagGenerator nametagGenerator;
     private WarpManager warpManager;
+    private final Map<UUID, Location> lastDeathLocations = new HashMap<>();
     public WarpManager getWarpManager() { return warpManager; }
+
+    public void recordDeathLocation(Player player) {
+        lastDeathLocations.put(player.getUniqueId(), player.getLocation().clone());
+    }
+
+    public Location getLastDeathLocation(Player player) {
+        Location location = lastDeathLocations.get(player.getUniqueId());
+        return location == null ? null : location.clone();
+    }
 
     //CONFIG
     private boolean joinMessagesEnabled;
@@ -68,9 +80,6 @@ public final class BeaconLabsCore extends JavaPlugin implements Listener {
         // Initialize the WarpManager
         warpManager = new WarpManager(this);
 
-        // Register JoinLeaveMessages listener
-        new JoinLeaveMessages(this);
-
         // Register other commands and listeners
         getServer().getPluginManager().registerEvents(this, this);
         getServer().getPluginManager().registerEvents(new JoinLeaveMessages(this), this);
@@ -78,9 +87,6 @@ public final class BeaconLabsCore extends JavaPlugin implements Listener {
         getServer().getPluginManager().registerEvents(new UnknownCommandListener(this), this);
         nametagGenerator = new org.bcnlab.beaconlabscore.listeners.NametagGenerator();
         getServer().getPluginManager().registerEvents(nametagGenerator, this);
-        EnchantCommand enchantCommand = new EnchantCommand(this);
-        RepairCommand repairCommand = new RepairCommand(this);
-
         this.getLifecycleManager().registerEventHandler(LifecycleEvents.COMMANDS, event -> {
             org.bcnlab.beaconlabscore.utils.CommandRegistry.registerAll(this, event.registrar());
         });
@@ -93,18 +99,21 @@ public final class BeaconLabsCore extends JavaPlugin implements Listener {
     @EventHandler
     public void onPlayerChat(AsyncPlayerChatEvent event) {
         event.setCancelled(true); // Prevent default chat behavior
-        final Player p = event.getPlayer();
-        if (GlobalMuteCommand.globalmute) {
-            if (!p.hasPermission("beaconlabs.core.globalmute.ignore")) {
-                p.sendMessage(getPrefix(p).append(net.kyori.adventure.text.minimessage.MiniMessage.miniMessage().deserialize("<gray>Chat is <gold>deactivated!")));
-                event.setCancelled(true);
-            } else {
-                chatFormatter.onPlayerChat(event.getPlayer(), event.getMessage());
+        final Player player = event.getPlayer();
+        final String message = event.getMessage();
+
+        // AsyncPlayerChatEvent is commonly fired off the main thread. Defer all
+        // Bukkit player iteration and message delivery to the server thread.
+        getServer().getScheduler().runTask(this, () -> {
+            if (!player.isOnline()) return;
+            if (GlobalMuteCommand.globalmute && !player.hasPermission("beaconlabs.core.globalmute.ignore")) {
+                player.sendMessage(getPrefix(player).append(
+                        net.kyori.adventure.text.minimessage.MiniMessage.miniMessage()
+                                .deserialize("<gray>Chat is <gold>deactivated!")));
+                return;
             }
-        }
-        else {
-            chatFormatter.onPlayerChat(event.getPlayer(), event.getMessage());
-        }
+            chatFormatter.onPlayerChat(player, message);
+        });
     }
 
     @Override
@@ -172,11 +181,6 @@ public final class BeaconLabsCore extends JavaPlugin implements Listener {
             if (player.hasMetadata("protocol_version")) {
                 int protocol = player.getMetadata("protocol_version").get(0).asInt();
                 if (protocol <= 47) {
-                    return legacyPrefix;
-                }
-            } else if (org.bukkit.Bukkit.getPluginManager().isPluginEnabled("ViaVersion")) {
-                int protocol = com.viaversion.viaversion.api.Via.getAPI().getPlayerVersion(player.getUniqueId());
-                if (protocol <= 47) { 
                     return legacyPrefix;
                 }
             }

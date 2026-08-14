@@ -6,10 +6,7 @@ import org.bukkit.Bukkit;
 import net.kyori.adventure.text.minimessage.MiniMessage;
 import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer;
 import org.bukkit.Location;
-import org.bukkit.command.Command;
-import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
-import org.bukkit.command.TabCompleter;
 import org.bukkit.entity.Player;
 import io.papermc.paper.threadedregions.scheduler.ScheduledTask;
 
@@ -20,7 +17,7 @@ import java.util.Map;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
-public class WarpCommand implements CommandExecutor, TabCompleter {
+public class WarpCommand implements io.papermc.paper.command.brigadier.BasicCommand {
     
     private final BeaconLabsCore plugin;
     private final WarpManager warpManager;
@@ -33,35 +30,36 @@ public class WarpCommand implements CommandExecutor, TabCompleter {
     }
     
     @Override
-    public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
+    public void execute(io.papermc.paper.command.brigadier.CommandSourceStack stack, String[] args) {
+        CommandSender sender = stack.getSender();
         if (!(sender instanceof Player)) {
             sender.sendMessage(plugin.getPrefix(sender).append(MiniMessage.miniMessage().deserialize("<gray>This command can only be used by players.")));
-            return true;
+            return;
         }
         
         Player player = (Player) sender;
         
         if (!player.hasPermission("beaconlabs.core.warp")) {
             player.sendMessage(plugin.getPrefix(player).append(LegacyComponentSerializer.legacyAmpersand().deserialize(plugin.getNoPermsMessage())));
-            return true;
+            return;
         }
         
         if (args.length < 1) {
             player.sendMessage(plugin.getPrefix(player).append(MiniMessage.miniMessage().deserialize("<gray>Usage: /warp <name>")));
-            return true;
+            return;
         }
         
         String warpName = args[0];
         
         if (!warpManager.warpExists(warpName)) {
             player.sendMessage(plugin.getPrefix(player).append(MiniMessage.miniMessage().deserialize("<gray>Warp '" + warpName + "' does not exist!")));
-            return true;
+            return;
         }
         
         // Check if player has a pending teleport
         if (pendingTeleports.containsKey(player.getUniqueId())) {
             player.sendMessage(plugin.getPrefix(player).append(MiniMessage.miniMessage().deserialize("<gray>You already have a pending warp teleport!")));
-            return true;
+            return;
         }
         
         // Get teleport delay from config
@@ -90,13 +88,19 @@ public class WarpCommand implements CommandExecutor, TabCompleter {
             pendingTeleports.put(player.getUniqueId(), task);
         }
         
-        return true;
+        return;
     }
     
     private void teleportToWarp(Player player, String warpName) {
         Location location = warpManager.getWarp(warpName);
+        if (location == null) {
+            player.sendMessage(plugin.getPrefix(player).append(MiniMessage.miniMessage()
+                    .deserialize("<gray>This warp is unavailable because its world is not loaded.")));
+            return;
+        }
         player.teleportAsync(location);
-        player.sendMessage(plugin.getPrefix(player).append(MiniMessage.miniMessage().deserialize("<gray>Teleported to warp '" + warpName + "'.")));
+        player.sendMessage(plugin.getPrefix(player).append(MiniMessage.miniMessage()
+                .deserialize("<gray>Teleported to warp '" + warpName + "'.")));
     }
     
     private boolean locationEquals(Location loc1, Location loc2) {
@@ -107,13 +111,20 @@ public class WarpCommand implements CommandExecutor, TabCompleter {
     }
     
     @Override
-    public List<String> onTabComplete(CommandSender sender, Command command, String alias, String[] args) {
-        if (args.length == 1) {
-            String partialName = args[0].toLowerCase();
+    public List<String> suggest(io.papermc.paper.command.brigadier.CommandSourceStack stack, String[] args) {
+        CommandSender sender = stack.getSender();
+        if (args.length <= 1) {
+            String partialName = org.bcnlab.beaconlabscore.commands.CommandCompletion
+                    .argument(args, 0).toLowerCase();
             return warpManager.getWarpNames().stream()
                     .filter(warp -> warp.toLowerCase().startsWith(partialName))
                     .collect(Collectors.toList());
         }
         return new ArrayList<>();
+    }
+
+    @Override
+    public boolean canUse(CommandSender sender) {
+        return sender.hasPermission("beaconlabs.core.warp");
     }
 }

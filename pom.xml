@@ -82,14 +82,8 @@
       <dependency>
           <groupId>net.luckperms</groupId>
           <artifactId>api</artifactId>
-          <version>5.4</version>
+          <version>5.5</version>
           <scope>provided</scope>
       </dependency>
-          <dependency>
-            <groupId>com.viaversion</groupId>
-            <artifactId>viaversion-api</artifactId>
-            <version>5.10.0</version>
-            <scope>provided</scope>
-        </dependency>
 </dependencies>
 </project>

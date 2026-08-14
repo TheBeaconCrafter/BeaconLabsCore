@@ -5,14 +5,12 @@ import org.bukkit.Bukkit;
 import net.kyori.adventure.text.minimessage.MiniMessage;
 import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer;
 import org.bukkit.GameMode;
-import org.bukkit.command.Command;
-import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 
-public class SpectateCommand implements CommandExecutor {
+public class SpectateCommand implements io.papermc.paper.command.brigadier.BasicCommand {
 
     private final BeaconLabsCore plugin;
 
@@ -21,11 +19,12 @@ public class SpectateCommand implements CommandExecutor {
     }
 
     @Override
-    public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
+    public void execute(io.papermc.paper.command.brigadier.CommandSourceStack stack, String[] args) {
+        CommandSender sender = stack.getSender();
         // Check if the command sender is a player
         if (!(sender instanceof Player)) {
             sender.sendMessage(plugin.getPrefix(sender).append(MiniMessage.miniMessage().deserialize("<gray>Only players can use this command!")));
-            return true;
+            return;
         }
 
         Player player = (Player) sender;
@@ -33,13 +32,13 @@ public class SpectateCommand implements CommandExecutor {
         // Check permission
         if (!player.hasPermission("beaconlabs.core.spectate")) {
             player.sendMessage(plugin.getPrefix(player).append(MiniMessage.miniMessage().deserialize("<gray>You do not have permission to use this command.")));
-            return true;
+            return;
         }
 
         // Validate command usage
         if (args.length != 1) {
             player.sendMessage(plugin.getPrefix(player).append(MiniMessage.miniMessage().deserialize("<gray>Usage: /spectate <player>")));
-            return true;
+            return;
         }
 
         String targetName = args[0];
@@ -48,7 +47,7 @@ public class SpectateCommand implements CommandExecutor {
         // Check if the target player is online
         if (target == null || !target.isOnline()) {
             player.sendMessage(plugin.getPrefix(player).append(MiniMessage.miniMessage().deserialize("<gray>Player '" + targetName + "' is not online.")));
-            return true;
+            return;
         }
 
         // Execute /vanish command for the player
@@ -57,7 +56,7 @@ public class SpectateCommand implements CommandExecutor {
         // Execute spectate actions
         executeSpectate(player, target);
 
-        return true;
+        return;
     }
 
     private void executeSpectate(Player spectator, Player target) {
@@ -80,4 +79,14 @@ public class SpectateCommand implements CommandExecutor {
         spectator.sendMessage(MiniMessage.miniMessage().deserialize("<gray>Spectating " + target.getName()));
     }
 
+    @Override
+    public java.util.Collection<String> suggest(io.papermc.paper.command.brigadier.CommandSourceStack stack, String[] args) {
+        return args.length <= 1 ? org.bcnlab.beaconlabscore.commands.CommandCompletion.players(
+                org.bcnlab.beaconlabscore.commands.CommandCompletion.argument(args, 0)) : java.util.List.of();
+    }
+
+    @Override
+    public boolean canUse(CommandSender sender) {
+        return sender.hasPermission("beaconlabs.core.spectate");
+    }
 }

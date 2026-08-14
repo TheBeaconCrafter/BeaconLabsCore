@@ -5,13 +5,11 @@ import org.bukkit.Bukkit;
 import net.kyori.adventure.text.minimessage.MiniMessage;
 import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer;
 import org.bukkit.GameMode;
-import org.bukkit.command.Command;
-import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.potion.PotionEffect;
 
-public class EndSpectateCommand implements CommandExecutor {
+public class EndSpectateCommand implements io.papermc.paper.command.brigadier.BasicCommand {
 
     private final BeaconLabsCore plugin;
 
@@ -20,11 +18,12 @@ public class EndSpectateCommand implements CommandExecutor {
     }
 
     @Override
-    public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
+    public void execute(io.papermc.paper.command.brigadier.CommandSourceStack stack, String[] args) {
+        CommandSender sender = stack.getSender();
         // Check if the command sender is a player
         if (!(sender instanceof Player)) {
             sender.sendMessage(plugin.getPrefix(sender).append(MiniMessage.miniMessage().deserialize("<gray>Only players can use this command!")));
-            return true;
+            return;
         }
 
         Player player = (Player) sender;
@@ -32,13 +31,13 @@ public class EndSpectateCommand implements CommandExecutor {
         // Check permission
         if (!player.hasPermission("beaconlabs.core.endspectator")) {
             player.sendMessage(plugin.getPrefix(player).append(MiniMessage.miniMessage().deserialize("<gray>You do not have permission to use this command.")));
-            return true;
+            return;
         }
 
         // Execute end spectator actions
         endSpectator(player);
 
-        return true;
+        return;
     }
 
     private void endSpectator(Player spectator) {
@@ -62,5 +61,15 @@ public class EndSpectateCommand implements CommandExecutor {
 
         // Clear title (if any)
         spectator.resetTitle();
+    }
+
+    @Override
+    public java.util.Collection<String> suggest(io.papermc.paper.command.brigadier.CommandSourceStack stack, String[] args) {
+        return java.util.List.of();
+    }
+
+    @Override
+    public boolean canUse(CommandSender sender) {
+        return sender.hasPermission("beaconlabs.core.endspectator");
     }
 }

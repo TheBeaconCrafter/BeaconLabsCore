@@ -4,17 +4,14 @@ import org.bcnlab.beaconlabscore.BeaconLabsCore;
 import org.bcnlab.beaconlabscore.utils.WarpManager;
 import net.kyori.adventure.text.minimessage.MiniMessage;
 import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer;
-import org.bukkit.command.Command;
-import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
-import org.bukkit.command.TabCompleter;
 import org.bukkit.entity.Player;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
-public class DelWarpCommand implements CommandExecutor, TabCompleter {
+public class DelWarpCommand implements io.papermc.paper.command.brigadier.BasicCommand {
     
     private final BeaconLabsCore plugin;
     private final WarpManager warpManager;
@@ -25,22 +22,23 @@ public class DelWarpCommand implements CommandExecutor, TabCompleter {
     }
     
     @Override
-    public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
+    public void execute(io.papermc.paper.command.brigadier.CommandSourceStack stack, String[] args) {
+        CommandSender sender = stack.getSender();
         if (!sender.hasPermission("beaconlabs.core.delwarp")) {
             sender.sendMessage(plugin.getPrefix(sender).append(LegacyComponentSerializer.legacyAmpersand().deserialize(plugin.getNoPermsMessage())));
-            return true;
+            return;
         }
         
         if (args.length < 1) {
             sender.sendMessage(plugin.getPrefix(sender).append(MiniMessage.miniMessage().deserialize("<gray>Usage: /delwarp <name>")));
-            return true;
+            return;
         }
         
         String warpName = args[0];
         
         if (!warpManager.warpExists(warpName)) {
             sender.sendMessage(plugin.getPrefix(sender).append(MiniMessage.miniMessage().deserialize("<gray>Warp '" + warpName + "' does not exist!")));
-            return true;
+            return;
         }
         
         boolean success = warpManager.deleteWarp(warpName);
@@ -51,17 +49,24 @@ public class DelWarpCommand implements CommandExecutor, TabCompleter {
             sender.sendMessage(plugin.getPrefix(sender).append(MiniMessage.miniMessage().deserialize("<gray>Failed to delete warp '" + warpName + "'.")));
         }
         
-        return true;
+        return;
     }
     
     @Override
-    public List<String> onTabComplete(CommandSender sender, Command command, String alias, String[] args) {
-        if (args.length == 1 && sender.hasPermission("beaconlabs.core.delwarp")) {
-            String partialName = args[0].toLowerCase();
+    public List<String> suggest(io.papermc.paper.command.brigadier.CommandSourceStack stack, String[] args) {
+        CommandSender sender = stack.getSender();
+        if (args.length <= 1 && sender.hasPermission("beaconlabs.core.delwarp")) {
+            String partialName = org.bcnlab.beaconlabscore.commands.CommandCompletion
+                    .argument(args, 0).toLowerCase();
             return warpManager.getWarpNames().stream()
                     .filter(warp -> warp.toLowerCase().startsWith(partialName))
                     .collect(Collectors.toList());
         }
         return new ArrayList<>();
+    }
+
+    @Override
+    public boolean canUse(CommandSender sender) {
+        return sender.hasPermission("beaconlabs.core.delwarp");
     }
 }

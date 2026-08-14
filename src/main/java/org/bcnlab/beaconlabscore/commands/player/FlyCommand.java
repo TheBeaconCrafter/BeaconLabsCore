@@ -4,12 +4,10 @@ import org.bukkit.Bukkit;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.minimessage.MiniMessage;
 import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer;
-import org.bukkit.command.Command;
-import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
-public class FlyCommand implements CommandExecutor {
+public class FlyCommand implements io.papermc.paper.command.brigadier.BasicCommand {
 
     private final Component pluginPrefix;
 
@@ -18,10 +16,11 @@ public class FlyCommand implements CommandExecutor {
     }
 
     @Override
-    public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
+    public void execute(io.papermc.paper.command.brigadier.CommandSourceStack stack, String[] args) {
+        CommandSender sender = stack.getSender();
         if (!(sender instanceof Player)) {
             sender.sendMessage(pluginPrefix.append(MiniMessage.miniMessage().deserialize("<gray>This command can only be used by players.")));
-            return true;
+            return;
         }
 
         Player player = (Player) sender;
@@ -29,13 +28,13 @@ public class FlyCommand implements CommandExecutor {
         if (args.length > 0) {
             if (!sender.hasPermission("beaconlabs.core.fly.others")) {
                 sender.sendMessage(pluginPrefix.append(MiniMessage.miniMessage().deserialize("<gray>You do not have permission to fly others.")));
-                return true;
+                return;
             }
 
             Player target = Bukkit.getPlayer(args[0]);
             if (target == null) {
                 sender.sendMessage(pluginPrefix.append(MiniMessage.miniMessage().deserialize("<gray>Player not found: " + args[0])));
-                return true;
+                return;
             }
 
             boolean notify = true;
@@ -54,12 +53,12 @@ public class FlyCommand implements CommandExecutor {
         } else {
             if (!sender.hasPermission("beaconlabs.core.fly.self")) {
                 sender.sendMessage(pluginPrefix.append(MiniMessage.miniMessage().deserialize("<gray>You do not have permission to use this command.")));
-                return true;
+                return;
             }
 
             toggleFlight(player, true);
         }
-        return true;
+        return;
     }
 
     private void toggleFlight(Player player, boolean notify) {
@@ -76,5 +75,17 @@ public class FlyCommand implements CommandExecutor {
                 player.sendMessage(pluginPrefix.append(MiniMessage.miniMessage().deserialize("<gray>Fly mode enabled.")));
             }
         }
+    }
+
+    @Override
+    public java.util.Collection<String> suggest(io.papermc.paper.command.brigadier.CommandSourceStack stack, String[] args) {
+        return args.length <= 1 ? org.bcnlab.beaconlabscore.commands.CommandCompletion.players(
+                org.bcnlab.beaconlabscore.commands.CommandCompletion.argument(args, 0)) : java.util.List.of();
+    }
+
+    @Override
+    public boolean canUse(CommandSender sender) {
+        return sender.hasPermission("beaconlabs.core.fly.self")
+                || sender.hasPermission("beaconlabs.core.fly.others");
     }
 }
